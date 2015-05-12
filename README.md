@@ -17,3 +17,7 @@
 ## index.php
 
 - hardcoded user data only for testing (TODO: frontend data input and verification)
+
+## helper_not_in_project/
+
+- delete_all_tables.sql: for testing purposes - deletes all tables, indexes, sequences (execute in sql developer)
