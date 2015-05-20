@@ -78,7 +78,7 @@ final class DbManager
         $dbInserter->insertPictureKeywordsIfNotExists($this->db, $picture->id, $keyword_ids);
     }
 
-    function searchPictures($searchData){
+    function searchUserData($searchData){
 
         $dbSearcher = new DbSearcher();
         $dbSearcher->search($this->db, $searchData);
