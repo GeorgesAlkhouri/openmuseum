@@ -15,5 +15,4 @@
     echo $headerController->display();
     echo $navigationController->display();
     echo $bodyController->display();
-
 ?>

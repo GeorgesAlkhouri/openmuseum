@@ -42,6 +42,7 @@ class View {
 	 * @return string Der Output des Templates.
 	 */
 	public function loadTemplate(){
+
 		$tpl = $this->template;
 		// Pfad zum Template erstellen & überprüfen ob das Template existiert.
 		$file = $this->path . DIRECTORY_SEPARATOR . $tpl . '.php';

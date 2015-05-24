@@ -2,11 +2,17 @@
 
 class BodyController implements IController {
 
-    private $body = '';
+    private $body = "";
 
 
     public function __construct($request){
-        $this->body = !empty($request['view']) ? $request['view'] : 'search';
+        $this->body = !empty($request["view"]) ? $request["view"] : "search";
+
+        // check for upload request
+        if (isset($request["action"]) && strcmp($request["action"], "upload") == 0) {
+
+        	$this->upload($request);
+        }
     }
 
 
@@ -15,6 +21,11 @@ class BodyController implements IController {
         $view->setTemplate($this->body);
         
         return $view->loadTemplate();
+    }
+
+    public function upload($request) {
+
+    	
     }
 
 }
