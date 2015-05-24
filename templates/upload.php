@@ -9,7 +9,7 @@
                     </div>
                     <div class="panel-body">
 
-                        <form action="index.php" method="post">
+                        <form action="index.php" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <input type="text" class="form-control" name="name" placeholder="Picture Name">
                             </div>
@@ -23,12 +23,14 @@
                                 <input type="text" class="form-control" name="owner" placeholder="Owner Name">
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" name="keywords" placeholder="Keyword1, Keyword2, Keyword3...">
+                                <input type="text" class="form-control" name="keywords" placeholder="Keyword 1, Keyword 2, Keyword 3 ...">
                             </div>
-                            <br />
+                            <div class="form-group">
+								<textarea class="form-control" name="description" rows="5" placeholder="Description Text"></textarea>
+							</div>
                             <div class="form-group">
                                 <label>Choose Category</label>
-                                <select class="form-control">
+                                <select name="category[]" multiple class="form-control">
                                     <option>Klassische Malerei</option>
                                     <option>Moderne Kunst</option>
                                     <option>Romantik</option>
@@ -51,6 +53,7 @@
 
                         	</div>
                         	<div class="col-md-4"></div>
+
                         	<input type="hidden" name="view" value="upload" />
                         	<input type="hidden" name="action" value="upload" />
                         </form>
