@@ -22,7 +22,7 @@ final class DbManager
 
     private function __construct()
     {
-        if ($this->db = oci_connect($stUser, $stPW, '//ora10glv.imn.htwk-leipzig.de:1521/ora10glv')) {
+        if ($this->db = oci_connect(Auth::$stUser, Auth::$stPW, '//ora10glv.imn.htwk-leipzig.de:1521/ora10glv')) {
             echo "dbconnection.php - connection to database succeded <br />";
         } 
         else {
