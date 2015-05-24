@@ -33,10 +33,10 @@ class BodyController implements IController {
     	$keywords = $this->prepareKeywords($request["keywords"]);
 
     	if (!$this->validateText($name) ||
-    		!$this->validateText($name) ||
-    		!$this->validateText($name) ||
-    		!$this->validateText($name) ||
-    		!$this->validateText($name)) {
+    		!$this->validateText($artist) ||
+    		!$this->validateText($museum) ||
+    		!$this->validateText($owner) ||
+    		!$this->validateText($description)) {
 
     		echo "Wrong text input (Artist, Name, etc...)";
     		return;
