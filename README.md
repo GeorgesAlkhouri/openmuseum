@@ -2,7 +2,7 @@
 
 ## DbManager.php
 
-- db connection (warning: don't commit connection data to git)
+- db connection (warning: don't commit connection data to git -> use global variables in Auth.php, is on ignore list)
 - db helper handling
 
 ## includes/dbhelper/

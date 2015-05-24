@@ -4,6 +4,7 @@ include_once 'dbhelper/DbIdFetcher.php';
 include_once 'dbhelper/DbInserter.php';
 include_once 'dbhelper/DbTableCreator.php';
 include_once 'dbhelper/DbSearcher.php';
+include_once 'Auth.php';
 
 final class DbManager
 {
@@ -21,7 +22,7 @@ final class DbManager
 
     private function __construct()
     {
-        if ($this->db = oci_connect("", "", '//ora10glv.imn.htwk-leipzig.de:1521/ora10glv')) {
+        if ($this->db = oci_connect(Auth::$stUser, Auth::$stPW, '//ora10glv.imn.htwk-leipzig.de:1521/ora10glv')) {
             echo "dbconnection.php - connection to database succeded <br />";
         } 
         else {
