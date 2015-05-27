@@ -61,21 +61,59 @@ class DbInserter
         }
     }
     
-    //TODO: attribute image ignored
     function insertPictureIfNotExists($db, $picture) {
         
         $picture->id = $this->dbIdFetcher->fetchPictureId($db, $picture);
         if (is_null($picture->id)) {
-            $sql = "INSERT INTO pictures (picture_id, name, description, creation_date, upload_date, 
-                artist_fk, artist_safety_level,museum_ownes_fk, museum_exhibits_fk, 
-                museum_exhibits_startdate, museum_exhibits_enddate, owner_fk) 
-            VALUES (pictures_seq.nextval, '$picture->name', '$picture->description', 
-                TO_DATE('$picture->creation_date', 'yyyy/mm/dd'), TO_DATE('$picture->upload_date', 'yyyy/mm/dd'), 
-                $picture->artist_fk, $picture->artist_safety_level, $picture->museum_owns_fk, $picture->museum_exhibits_fk, 
-                TO_DATE('$picture->museum_exhibits_startdate', 'yyyy/mm/dd'), TO_DATE('$picture->museum_exhibits_enddate', 'yyyy/mm/dd'), $picture->owner_fk)";
+            $sql = "INSERT INTO pictures (
+                    picture_id, 
+                    name, 
+                    description, 
+                    image, 
+                    image_sig, 
+                    creation_date, 
+                    upload_date, 
+                    artist_fk, 
+                    artist_safety_level,
+                    museum_ownes_fk, 
+                    museum_exhibits_fk, 
+                    museum_exhibits_startdate, 
+                    museum_exhibits_enddate, 
+                    owner_fk) 
+            VALUES (pictures_seq.nextval, 
+                    '$picture->name', 
+                    '$picture->description', 
+                    ORDSYS.ORDImage.init('FILE', $picture->image_path ,$picture->image_name), 
+                    ORDSYS.ORDImageSignature.init(),
+                    TO_DATE('$picture->creation_date', 'yyyy/mm/dd'), 
+                    TO_DATE('$picture->upload_date', 'yyyy/mm/dd'), 
+                    $picture->artist_fk, 
+                    $picture->artist_safety_level, 
+                    $picture->museum_owns_fk, 
+                    $picture->museum_exhibits_fk, 
+                    TO_DATE('$picture->museum_exhibits_startdate', 'yyyy/mm/dd'), 
+                    TO_DATE('$picture->museum_exhibits_enddate', 'yyyy/mm/dd'), 
+                    $picture->owner_fk)";
+            $this->executeSql($db, $sql);
+
+            /** Create ImageSignature **/
+
+            // TODO: Better solution for picture id? Possible problems when users insert parallel
+            $sql = "DECLARE imageObj ORDSYS.ORDImage;
+                            image_sigObj ORDSYS.ORDImageSignature;
+                    BEGIN
+                    SELECT image, image_sig INTO imageObj, image_sigObj
+                    FROM pictures WHERE picture_id=pictures_seq.currval FOR UPDATE;
+                    image_sigObj.generateSignature(imageObj);
+                    UPDATE pictures SET image_sig = image_sigObj 
+                    WHERE picture_id=pictures_seq.currval;
+                    COMMIT; END;"
+
             $this->executeSql($db, $sql);
         }
     }
+
+
     
     function insertPictureCategoriesIfNotExists($db, $picture_id, $category_ids) {
         

@@ -15,6 +15,9 @@ class Picture{
     public $museum_exhibits_startdate;
     public $museum_exhibits_enddate;
     public $owner_fk;
+
+    public $image_path;
+    public $image_name;
 }
 
 ?>
