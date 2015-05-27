@@ -2,6 +2,7 @@
 
 class SearchData{
 
+	public $txtDefault;
 	public $txtPictureName;
 	public $txtArtist;
 	public $txtMuseum;
