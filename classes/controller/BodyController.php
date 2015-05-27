@@ -25,36 +25,79 @@ class BodyController implements IController {
 
     public function upload($request) {
 
-    	$name = $this->prepareInput($request["name"]);
-    	$artist = $this->prepareInput($request["artist"]);
-    	$museum = $this->prepareInput($request["museum"]);
-    	$owner = $this->prepareInput($request["owner"]);
+    	$pictureName = $this->prepareInput($request["picture_name"]);
+    	$pictureCreationDate = $this->prepareInputDate($request["picture_creation_date"]);
     	$description = $this->prepareInput($request["description"]);
     	$keywords = $this->prepareKeywords($request["keywords"]);
 
-    	if (!$this->validateText($name) ||
-    		!$this->validateText($artist) ||
-    		!$this->validateText($museum) ||
-    		!$this->validateText($owner) ||
-    		!$this->validateText($description)) {
+    	if (isset($request["category"]))
+			$categories = $request["category"];
 
-    		echo "Wrong text input (Artist, Name, etc...)";
+    	if (!$this->validateText($pictureName) ||
+    		!$this->validateText($description) ||
+    		!$pictureCreationDate) {
+
+    		echo "Wrong picture input";
     		return;
     	}
 
-    	if (count($keywords) == 0) {
+    	if (count($keywords) == 0 || count($keywords) > 10) {
 
-    		echo "No keywords";
+    		echo "Wrong keywords count";
     		return;
     	}
 
-    	if (!isset($request["category"])) {
+    	$artistFirstname = $this->prepareInput($request["artist_firstname"]);
+    	$artistSurname = $this->prepareInput($request["artist_surname"]);
+    	$artistBirthday = $this->prepareInputDate($request["artist_birthday"]);
+    	$artistDeathday = $this->prepareInputDate($request["artist_deathday"]);
 
-    		echo "No category";
+    	if (!$this->validateText($artistFirstname) ||
+    		!$this->validateText($artistSurname) ||
+    		!$artistBirthday ||
+    		!$artistDeathday) {
+
+    		echo "Wrong artist input";
     		return;
     	}
 
-    	$categories = $request["category"];
+    	$isMuseumOwner = false;
+
+    	// Museum is optional
+    	if (strlen($this->prepareInput($request["museum_name"])) > 0) {
+    		$museumName = $this->prepareInput($request["museum_name"]);
+    		$museumAdress = $this->prepareInput($request["museum_adress"]);
+    		$museumWebsite = $this->prepareInput($request["museum_website"]);
+
+    		if (isset($request["museum_isExhibitor"]))
+    			$isMuseumOwner = true;
+    		else 
+    			$isMuseumOwner = false;
+
+    		if (isset($request["museum_isOwner"]))
+    			$isMuseumExhibitor = true;
+    		else 
+    			$isMuseumExhibitor = false;
+
+	    	if (!$this->validateText($museumName) ||
+	    		!$this->validateText($museumAdress) ||
+	    		!$this->validateText($museum_website)) {
+
+	    		echo "Wrong museum input";
+	    	}
+    	}
+
+    	if (!$isMuseumOwner) {
+
+    		$ownerFirstname = $this->prepareInput($request["owner_firstname"]);
+    		$ownerSurename = $this->prepareInput($request["owner_surname"]);
+
+    		if (!$this->validateText($ownerFirstname) ||
+    			!$this->validateText($ownerSurename)) {
+
+    				echo "Wrong owner input";
+    			}
+    	}
 
     	if (!$this->validateFile($request["picture"])) {
 
@@ -62,20 +105,6 @@ class BodyController implements IController {
     		return;
     	} 
 
-    	$this->uploadData(	$name,
-    						$artist,
-    						$museum,
-    						$owner,
-    						$description,
-    						$keywords,
-    						$categories,
-    						$request["picture"]);
-    }
-
-    private function uploadData($name, $artist, $museum, $owner, $description, $keywords, $categories, $file) {
-
-    	$a = new Artist();
-  
     }
 
     private function prepareInput($data) {
@@ -84,6 +113,13 @@ class BodyController implements IController {
   		$data = stripslashes($data);
   		$data = htmlspecialchars($data);
   		return $data;
+	}
+
+	private function prepareInputDate($date) {
+
+		$date = $this->prepareInput($date);
+
+		return DateTime::createFromFormat("j.m.Y", $date);
 	}
 
     private function prepareKeywords($data) {
