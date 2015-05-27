@@ -52,8 +52,34 @@ class DbTableCreator
         if (!$this->indexExists($db, $index)) {
             
             //create index for description
-            $sql = "CREATE INDEX $index ON pictures(description) TABLESPACE indx";
-            $this->executeSql($db, $sql);
+            $sql = "begin
+                        ctx_ddl.create_preference('mylexer', 'BASIC_LEXER' );
+                        ctx_ddl.set_attribute ( 'mylexer', 'mixed_case', 'NO' );
+                    end;";
+
+            $stmt = oci_parse($db, $sql);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+
+            $sql = "begin
+                        ctx_ddl.create_preference('mystore', 'BASIC_STORAGE');
+                       ctx_ddl.set_attribute('mystore', 'I_TABLE_CLAUSE', 'tablespace INDX');
+                       ctx_ddl.set_attribute('mystore', 'K_TABLE_CLAUSE', 'tablespace INDX');
+                       ctx_ddl.set_attribute('mystore', 'R_TABLE_CLAUSE', 'tablespace INDX');
+                       ctx_ddl.set_attribute('mystore', 'N_TABLE_CLAUSE', 'tablespace INDX');
+                       ctx_ddl.set_attribute('mystore', 'I_INDEX_CLAUSE', 'tablespace INDX');
+                       ctx_ddl.set_attribute('mystore', 'P_TABLE_CLAUSE', 'tablespace INDX');
+                    end;";
+            
+            $stmt = oci_parse($db, $sql);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+
+            $sql = "CREATE INDEX $index ON pictures ( description )
+                       INDEXTYPE IS CTXSYS.CONTEXT
+                       PARAMETERS ( 'LEXER mylexer STORAGE mystore SYNC (ON COMMIT)' );"
+
+            $stmt = oci_parse($db, $sql);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            oci_commit($db);
         }
     }
     
