@@ -6,6 +6,10 @@
     include("classes/controller/BodyController.php");
     include("classes/view/View.php");
     include("classes/model/Artist.php");
+    include("classes/model/Category.php");
+    include("classes/model/Museum.php");
+    include("classes/model/Owner.php");
+    include("classes/model/Picture.php");
 
     $request = array_merge($_GET, $_POST, $_FILES);
 

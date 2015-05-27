@@ -58,9 +58,24 @@ class BodyController implements IController {
 
     	if (!$this->validateFile($request["picture"])) {
 
-    		echo "Wrong image type";
+    		echo "Wrong image type or image size to big.";
     		return;
     	} 
+
+    	$this->uploadData(	$name,
+    						$artist,
+    						$museum,
+    						$owner,
+    						$description,
+    						$keywords,
+    						$categories,
+    						$request["picture"]);
+    }
+
+    private function uploadData($name, $artist, $museum, $owner, $description, $keywords, $categories, $file) {
+
+    	$a = new Artist();
+  
     }
 
     private function prepareInput($data) {
@@ -91,6 +106,9 @@ class BodyController implements IController {
     }
 
     private function validateFile($data) {
+
+    	if ($data["size"] > 625000)
+    		return false;
 
     	$allowedFileTypes = array("image/jpeg", "image/tiff", "image/png");
     	$uploadedFileType = $data["type"];
