@@ -3,10 +3,10 @@ include_once 'DbIdFetcher.php';
 
 class DbInserter
 {
-	private $log;
+    private $log;
     private $dbIdFetcher;
-
-    function DbInserter(){
+    
+    function DbInserter() {
         $this->log = 'DbInserter';
         $this->dbIdFetcher = new DbIdFetcher();
     }
@@ -94,26 +94,27 @@ class DbInserter
                     TO_DATE('$picture->museum_exhibits_startdate', 'yyyy/mm/dd'), 
                     TO_DATE('$picture->museum_exhibits_enddate', 'yyyy/mm/dd'), 
                     $picture->owner_fk)";
-            $this->executeSql($db, $sql);
-
+            
+            $stmt = oci_parse($db, $sql);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            
             /** Create ImageSignature **/
-
-            // TODO: Better solution for picture id? Possible problems when users insert parallel
             $sql = "DECLARE imageObj ORDSYS.ORDImage;
                             image_sigObj ORDSYS.ORDImageSignature;
                     BEGIN
-                    SELECT image, image_sig INTO imageObj, image_sigObj
-                    FROM pictures WHERE picture_id=pictures_seq.currval FOR UPDATE;
-                    image_sigObj.generateSignature(imageObj);
+                        SELECT image, image_sig INTO imageObj, image_sigObj
+                        FROM pictures WHERE picture_id = pictures_seq.currval FOR UPDATE;
+                        image_sigObj.generateSignature(imageObj);
                     UPDATE pictures SET image_sig = image_sigObj 
-                    WHERE picture_id=pictures_seq.currval;
+                    WHERE picture_id = pictures_seq.currval;
                     COMMIT; END;"
 
-            $this->executeSql($db, $sql);
+            $stmt = oci_parse($db, $sql);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            
+            oci_commit($db);
         }
     }
-
-
     
     function insertPictureCategoriesIfNotExists($db, $picture_id, $category_ids) {
         
