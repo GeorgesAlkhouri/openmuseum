@@ -63,6 +63,11 @@ class BodyController implements IController {
 
     	$isMuseumOwner = false;
 
+        $isMuseumExhibitor;
+        $museumName;
+        $museumAdress;
+        $museumWebsite;
+
     	// Museum is optional
     	if (strlen($this->prepareInput($request["museum_name"])) > 0) {
     		$museumName = $this->prepareInput($request["museum_name"]);
@@ -81,11 +86,14 @@ class BodyController implements IController {
 
 	    	if (!$this->validateText($museumName) ||
 	    		!$this->validateText($museumAdress) ||
-	    		!$this->validateText($museum_website)) {
+	    		!$this->validateText($museumWebsite)) {
 
 	    		echo "Wrong museum input";
 	    	}
     	}
+
+        $ownerFirstname;
+        $ownerSurename;
 
     	if (!$isMuseumOwner) {
 
@@ -97,7 +105,12 @@ class BodyController implements IController {
 
     				echo "Wrong owner input";
     			}
-    	}
+    	} else {
+
+            $ownerFirstname = $museumName;
+            $ownerSurename = $museumName;
+
+        }
 
     	if (!$this->validateFile($request["picture"])) {
 
@@ -105,6 +118,34 @@ class BodyController implements IController {
     		return;
     	} 
 
+        $picture = new Picture();
+        $picture->name = $pictureName;
+        $picture->description = $description;
+        $picture->creation_date = $pictureCreationDate;
+
+        date_default_timezone_set("Europe/Berlin");
+        $currentDate = date("d/m/Y h:i:s a");
+
+        $picture->upload_date = $currentDate;
+        $picture->image_name = $request["picture"]["name"];
+        $picture->image_path = $request["picture"]["tmp_name"];
+
+        $artist = new Artist();
+        $artist->firstname = $artistFirstname;
+        $artist->lastname = $artistSurname;
+        $artist->birth_date = $artistBirthday;
+        $artist->death_date = $artistDeathday;
+
+        $museum = new Museum();
+        $museum->name = $museumName;
+        $museum->adress = $museumAdress;
+        $museum->website = $museumWebsite;
+        $museum->isExhibitor = $isMuseumExhibitor;
+        $museum->isOwner = $isMuseumOwner;
+
+        $owner = new Owner();
+        $owner->firstname = $ownerFirstname;
+        $owner->lastname = $ownerSurename;
     }
 
     private function prepareInput($data) {
