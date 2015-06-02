@@ -9,4 +9,7 @@
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Colorpicker for Bootstrap -->
+    <link href="vendor/colorpicker/css/bootstrap-colorpicker.min.css" rel="stylesheet">
   </head>
