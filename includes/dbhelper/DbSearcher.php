@@ -13,7 +13,7 @@ class DbSearcher{
         $sql;
 
         /* Default search*/
-        if (!empty($searchData->txtDefault) {
+        if (!empty($searchData->txtDefault)) {
             $search = $searchData->txtDefault;
             $sql = "SELECT DISTINCT pictures.name 
                     FROM pictures, artists, museums, keywords, pictures_keywords, owners
@@ -40,7 +40,7 @@ class DbSearcher{
                     (
                         pictures.owner_fk = owners.owner_id AND
                         concat(concat(UPPER(owners.firstname), ' '), UPPER(owners.firstname)) LIKE UPPER('%$search%')
-                        )"
+                        )";
         }
 
         executeSql($db, $sql);

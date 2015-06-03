@@ -107,7 +107,7 @@ class DbInserter
                         image_sigObj.generateSignature(imageObj);
                     UPDATE pictures SET image_sig = image_sigObj 
                     WHERE picture_id = pictures_seq.currval;
-                    COMMIT; END;"
+                    COMMIT; END;";
 
             $stmt = oci_parse($db, $sql);
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);

@@ -10,6 +10,7 @@
     include("classes/model/Museum.php");
     include("classes/model/Owner.php");
     include("classes/model/Picture.php");
+    include("includes/DbManager.php");
 
     $request = array_merge($_GET, $_POST, $_FILES);
 
