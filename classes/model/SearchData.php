@@ -5,7 +5,8 @@ class SearchData{
 	public $txtDefault;
 	public $txtPictureName;
 	public $txtArtist;
-	public $txtMuseum;
+	public $txtMuseumOwnes;
+	public $txtMuseumExhibits;
 	public $txtOwner;
 	public $txtDescription;
 
