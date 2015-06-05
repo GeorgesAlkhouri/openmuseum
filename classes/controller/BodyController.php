@@ -29,6 +29,7 @@ class BodyController implements IController {
     	$pictureCreationDate = $this->prepareInputDate($request["picture_creation_date"]);
     	$description = $this->prepareInput($request["description"]);
     	$keywords = $this->prepareKeywords($request["keywords"]);
+        $categories;
 
     	if (isset($request["category"]))
 			$categories = $request["category"];
@@ -74,12 +75,12 @@ class BodyController implements IController {
     		$museumAdress = $this->prepareInput($request["museum_adress"]);
     		$museumWebsite = $this->prepareInput($request["museum_website"]);
 
-    		if (isset($request["museum_isExhibitor"]))
+    		if (isset($request["museum_isOwner"]))
     			$isMuseumOwner = true;
     		else 
     			$isMuseumOwner = false;
 
-    		if (isset($request["museum_isOwner"]))
+    		if (isset($request["museum_isExhibitor"]))
     			$isMuseumExhibitor = true;
     		else 
     			$isMuseumExhibitor = false;
@@ -160,7 +161,7 @@ class BodyController implements IController {
 
 		$date = $this->prepareInput($date);
 
-		return DateTime::createFromFormat("j.m.Y", $date);
+		return DateTime::createFromFormat("j.m.Y", $date)->format("j.m.Y");
 	}
 
     private function prepareKeywords($data) {
