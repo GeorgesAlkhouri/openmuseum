@@ -18,6 +18,11 @@ class Picture{
 
     public $image_path;
     public $image_name;
+
+    public function __toString() {
+
+        return $this->name . " " . $this->description . " " . $this->creation_date . " " . $this->upload_date;
+    }
 }
 
 ?>
