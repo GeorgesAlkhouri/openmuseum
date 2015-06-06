@@ -16,7 +16,7 @@ class DbInserter
         $artist_id = $this->dbIdFetcher->fetchArtistId($db, $artist);
         if (is_null($artist_id)) {
             $sql = "INSERT INTO artists (artist_id, firstname, lastname, birth_date, death_date) 
-            VALUES (artists_seq.nextval, '$artist->firstname', '$artist->lastname', TO_DATE('$artist->birth_date', 'yyyy/mm/dd'), TO_DATE('$artist->death_date', 'yyyy/mm/dd'))";
+            VALUES (artists_seq.nextval, '$artist->firstname', '$artist->lastname', TO_DATE('$artist->birth_date', 'dd.mm.yyyy'), TO_DATE('$artist->death_date', 'dd.mm.yyyy'))";
             $this->executeSql($db, $sql);
         }
     }
@@ -83,17 +83,24 @@ class DbInserter
             VALUES (pictures_seq.nextval, 
                     '$picture->name', 
                     '$picture->description', 
-                    ORDSYS.ORDImage.init('FILE', $picture->image_path ,$picture->image_name), 
+                    ORDSYS.ORDImage.init('FILE', '$picture->image_path', '$picture->image_name'), 
                     ORDSYS.ORDImageSignature.init(),
-                    TO_DATE('$picture->creation_date', 'yyyy/mm/dd'), 
-                    TO_DATE('$picture->upload_date', 'yyyy/mm/dd'), 
+                    TO_DATE('$picture->creation_date', 'dd.mm.yyyy'), 
+                    TO_DATE('$picture->upload_date', 'dd.mm.yyyy'), 
                     $picture->artist_fk, 
                     $picture->artist_safety_level, 
-                    $picture->museum_owns_fk, 
+                    $picture->museum_owns_fk,
                     $picture->museum_exhibits_fk, 
-                    TO_DATE('$picture->museum_exhibits_startdate', 'yyyy/mm/dd'), 
-                    TO_DATE('$picture->museum_exhibits_enddate', 'yyyy/mm/dd'), 
+                    TO_DATE('$picture->museum_exhibits_startdate', 'dd.mm.yyyy'), 
+                    TO_DATE('$picture->museum_exhibits_enddate', 'dd.mm.yyyy'), 
                     $picture->owner_fk)";
+
+                //TODO: Fix missing expression warining caused by 
+                // $picture->museum_owns_fk,
+                // $picture->museum_exhibits_fk,
+                // $picture->owner_fk
+
+                // echo $sql;
             
             $stmt = oci_parse($db, $sql);
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);
@@ -108,6 +115,8 @@ class DbInserter
                     UPDATE pictures SET image_sig = image_sigObj 
                     WHERE picture_id = pictures_seq.currval;
                     COMMIT; END;";
+
+            // echo $sql;
 
             $stmt = oci_parse($db, $sql);
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);

@@ -29,7 +29,7 @@ class BodyController implements IController {
     	$pictureCreationDate = $this->prepareInputDate($request["picture_creation_date"]);
     	$description = $this->prepareInput($request["description"]);
     	$keywords = $this->prepareKeywords($request["keywords"]);
-        $categories;
+        $categories = NULL;
 
     	if (isset($request["category"]))
 			$categories = $request["category"];
@@ -62,12 +62,12 @@ class BodyController implements IController {
     		return;
     	}
 
-    	$isMuseumOwner = false;
+    	$isMuseumOwner = NULL;
 
-        $isMuseumExhibitor;
-        $museumName;
-        $museumAdress;
-        $museumWebsite;
+        $isMuseumExhibitor = NULL;
+        $museumName = NULL;
+        $museumAdress = NULL;
+        $museumWebsite = NULL;
 
     	// Museum is optional
     	if (strlen($this->prepareInput($request["museum_name"])) > 0) {
@@ -93,10 +93,17 @@ class BodyController implements IController {
 	    	}
     	}
 
-        $ownerFirstname;
-        $ownerSurename;
+        $ownerFirstname = NULL;
+        $ownerSurename = NULL;
 
-    	if (!$isMuseumOwner) {
+        // Check owner if museum is not declared or museum is not owner
+    	if (!$isMuseumOwner || strlen($this->prepareInput($request["museum_name"])) <= 0) {
+
+            if (!isset($request["owner_firstname"]) || 
+                !isset($request["owner_surname"])) {
+                echo "Wrong owner input";
+                return;
+            }
 
     		$ownerFirstname = $this->prepareInput($request["owner_firstname"]);
     		$ownerSurename = $this->prepareInput($request["owner_surname"]);
@@ -105,7 +112,8 @@ class BodyController implements IController {
     			!$this->validateText($ownerSurename)) {
 
     				echo "Wrong owner input";
-    			}
+                    return;
+    		}
     	} else {
 
             $ownerFirstname = $museumName;
@@ -125,11 +133,12 @@ class BodyController implements IController {
         $picture->creation_date = $pictureCreationDate;
 
         date_default_timezone_set("Europe/Berlin");
-        $currentDate = date("d/m/Y h:i:s a");
+        $currentDate = date("j.m.Y");
 
         $picture->upload_date = $currentDate;
         $picture->image_name = $request["picture"]["name"];
         $picture->image_path = $request["picture"]["tmp_name"];
+        $picture->artist_safety_level = 100;
 
         $artist = new Artist();
         $artist->firstname = $artistFirstname;
@@ -147,6 +156,16 @@ class BodyController implements IController {
         $owner = new Owner();
         $owner->firstname = $ownerFirstname;
         $owner->lastname = $ownerSurename;
+
+        // echo " Picture ".$picture . "<br>" ; 
+        // echo " Owner ". $owner . "<br>" ; 
+        // echo "  Museum ". $museum . "<br>" ;
+        // echo " Artist " . $artist . "<br>" ;
+        // echo " Categories " . print_r($categories);
+        
+        echo "PRE";
+
+        DbManager::Instance()->insertUserDataInDb($picture, $artist, $museum, $owner, $keywords, $categories);
     }
 
     private function prepareInput($data) {
@@ -161,7 +180,12 @@ class BodyController implements IController {
 
 		$date = $this->prepareInput($date);
 
-		return DateTime::createFromFormat("j.m.Y", $date)->format("j.m.Y");
+        $dateTime = DateTime::createFromFormat("j.m.Y", $date);
+
+        if ($dateTime)
+            return $dateTime->format("j.m.Y");
+        else
+            return false;
 	}
 
     private function prepareKeywords($data) {
