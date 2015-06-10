@@ -65,22 +65,16 @@ class DbInserter
         
         $picture->id = $this->dbIdFetcher->fetchPictureId($db, $picture);
         if (is_null($picture->id)) {
+
             $sql = "INSERT INTO pictures (
-                    picture_id, 
-                    name, 
-                    description, 
-                    image, 
-                    image_sig, 
-                    creation_date, 
-                    upload_date, 
-                    artist_fk, 
-                    artist_safety_level,
-                    museum_ownes_fk, 
-                    museum_exhibits_fk, 
-                    museum_exhibits_startdate, 
-                    museum_exhibits_enddate, 
-                    owner_fk) 
-            VALUES (pictures_seq.nextval, 
+                    picture_id, name, description, 
+                    image, image_sig, 
+                    creation_date, upload_date, 
+                    artist_fk, artist_safety_level,
+                    museum_ownes_fk, museum_exhibits_fk, 
+                    museum_exhibits_startdate, museum_exhibits_enddate, 
+                    owner_fk)
+                    VALUES (pictures_seq.nextval, 
                     '$picture->name', 
                     '$picture->description', 
                     ORDSYS.ORDImage.init('FILE', '$picture->image_path', '$picture->image_name'), 
@@ -88,21 +82,35 @@ class DbInserter
                     TO_DATE('$picture->creation_date', 'dd.mm.yyyy'), 
                     TO_DATE('$picture->upload_date', 'dd.mm.yyyy'), 
                     $picture->artist_fk, 
-                    $picture->artist_safety_level, 
-                    $picture->museum_owns_fk,
-                    $picture->museum_exhibits_fk, 
+                    $picture->artist_safety_level,";
+
+            if (empty($picture->museum_owns_fk)) {
+                $sql .= "NULL, ";
+            }else{
+                $sql .= "$picture->museum_owns_fk , ";
+            }
+            if (empty($picture->museum_exhibits_fk)) {
+                $sql .= "NULL, NULL, NULL, ";
+            }else{
+                $sql .= "$picture->museum_exhibits_fk ,
                     TO_DATE('$picture->museum_exhibits_startdate', 'dd.mm.yyyy'), 
-                    TO_DATE('$picture->museum_exhibits_enddate', 'dd.mm.yyyy'), 
-                    $picture->owner_fk)";
+                    TO_DATE('$picture->museum_exhibits_enddate', 'dd.mm.yyyy'), ";
+            }
+            if (empty($picture->owner_fk)) {
+                $sql .= "NULL)";
+            }else{
+                $sql .= "$picture->owner_fk)";
+            }
 
-                //TODO: Fix missing expression warining caused by 
-                // $picture->museum_owns_fk,
-                // $picture->museum_exhibits_fk,
-                // $picture->owner_fk
+            $sql .= "returning picture_id into :picture_id";
 
-                // echo $sql;
-            
+
+            echo "$this->log - $sql <br />";
             $stmt = oci_parse($db, $sql);
+
+            $currentPictureId;
+            OCIBindByName($stmt,":picture_id",$currentPictureId,32);
+
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);
             
             /** Create ImageSignature **/
@@ -110,14 +118,14 @@ class DbInserter
                             image_sigObj ORDSYS.ORDImageSignature;
                     BEGIN
                         SELECT image, image_sig INTO imageObj, image_sigObj
-                        FROM pictures WHERE picture_id = pictures_seq.currval FOR UPDATE;
+                        FROM pictures WHERE picture_id = $currentPictureId FOR UPDATE;
                         image_sigObj.generateSignature(imageObj);
                     UPDATE pictures SET image_sig = image_sigObj 
-                    WHERE picture_id = pictures_seq.currval;
+                    WHERE picture_id = $currentPictureId;
                     COMMIT; END;";
 
             // echo $sql;
-
+            echo "$this->log - $sql <br />";
             $stmt = oci_parse($db, $sql);
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);
             
