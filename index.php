@@ -10,10 +10,11 @@
     include("classes/model/Museum.php");
     include("classes/model/Owner.php");
     include("classes/model/Picture.php");
+    include("classes/model/SearchData.php");
     include("includes/DbManager.php");
 
     $request = array_merge($_GET, $_POST, $_FILES);
-
+    
     $headerController = new HeaderController($request);
     $navigationController = new NavigationController($request);
     $bodyController = new BodyController($request);
