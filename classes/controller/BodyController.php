@@ -12,6 +12,9 @@ class BodyController implements IController {
         if (isset($request["action"]) && strcmp($request["action"], "upload") == 0) {
 
         	$this->upload($request);
+        } else if (isset($request["action"]) && strcmp($request["action"], "search") == 0) {
+
+            $this->search($request);
         }
     }
 
@@ -23,6 +26,39 @@ class BodyController implements IController {
         return $view->loadTemplate();
     }
 
+    public function search($request) {
+
+        $searchAll = $this->prepareInput($request["search_all"]);
+        $pictureName = $this->prepareInput($request["search_picture_name"]);
+        $artist = $this->prepareInput($request["search_picture_artist"]);
+        $museum = $this->prepareInput($request["search_picture_museum"]);
+        $owner = $this->prepareInput($request["search_picture_owner"]);
+        $keywords = $this->prepareKeywords($request["search_picture_keywords"]);
+        $description = $this->prepareInput($request["search_picture_decription"]);
+        $categories = $this->mapCategories($request["search_category"]);
+
+        if (is_uploaded_file($request["picture_comparing"]["tmp_name"])) {
+
+            if (!$this->validateFile($request["picture_comparing"])) {
+
+                echo "Wrong image type or image size to big.";
+                return;
+            }
+        }
+
+        if (is_uploaded_file($request["texture_comparing"]["tmp_name"])) {
+
+            if ( isset($request["texture_comparing"]) & !$this->validateFile($request["texture_comparing"])) {
+
+                echo "Wrong image type or image size to big.";
+                return;
+            }
+        }
+
+        //TODO: Finish search data validation --> do search
+
+    }
+
     public function upload($request) {
 
     	$pictureName = $this->prepareInput($request["picture_name"]);
@@ -32,7 +68,7 @@ class BodyController implements IController {
         $categories = NULL;
 
     	if (isset($request["category"]))
-			$categories = $request["category"];
+			$categories = $this->mapCategories($request["category"]);
 
     	if (!$this->validateText($pictureName) ||
     		!$this->validateText($description) ||
@@ -166,6 +202,20 @@ class BodyController implements IController {
         echo "PRE";
 
         DbManager::Instance()->insertUserDataInDb($picture, $artist, $museum, $owner, $keywords, $categories);
+    }
+
+    private function mapCategories($categories) {
+
+        array_walk($categories, function(&$key, $value) {
+
+            $category = new Category();
+            $category->id = $value;
+            $category->title = $key;
+
+            $key = $category;
+        });
+
+        return $categories;
     }
 
     private function prepareInput($data) {

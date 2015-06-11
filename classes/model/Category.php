@@ -8,7 +8,8 @@ class Category{
 
 	public function __toString() {
 
-		return $this->title;
+		return 	"ID: " . $this->id . "<br />" .
+				"Title: ". $this->title;
 	}
 }
 
