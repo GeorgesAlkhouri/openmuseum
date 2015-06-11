@@ -66,6 +66,12 @@ class DbInserter
         $picture->id = $this->dbIdFetcher->fetchPictureId($db, $picture);
         if (is_null($picture->id)) {
 
+            $sql = "CREATE OR REPLACE DIRECTORY IMGDIR02 AS '$picture->image_path'";
+
+            echo "$this->log - $sql <br />";
+            $stmt = oci_parse($db, $sql);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+
             $sql = "INSERT INTO pictures (
                     picture_id, name, description, 
                     image, image_sig, 
@@ -77,13 +83,14 @@ class DbInserter
                     VALUES (pictures_seq.nextval, 
                     '$picture->name', 
                     '$picture->description', 
-                    ORDSYS.ORDImage.init('FILE', '$picture->image_path', '$picture->image_name'), 
+                    ORDSYS.ORDImage.init('FILE', 'IMGDIR02', '$picture->image_name'), 
                     ORDSYS.ORDImageSignature.init(),
                     TO_DATE('$picture->creation_date', 'dd.mm.yyyy'), 
                     TO_DATE('$picture->upload_date', 'dd.mm.yyyy'), 
                     $picture->artist_fk, 
                     $picture->artist_safety_level,";
 
+            /** Add Optional Parameters **/
             if (empty($picture->museum_owns_fk)) {
                 $sql .= "NULL, ";
             }else{
@@ -104,7 +111,6 @@ class DbInserter
 
             $sql .= "returning picture_id into :picture_id";
 
-
             echo "$this->log - $sql <br />";
             $stmt = oci_parse($db, $sql);
 
@@ -124,7 +130,6 @@ class DbInserter
                     WHERE picture_id = $currentPictureId;
                     COMMIT; END;";
 
-            // echo $sql;
             echo "$this->log - $sql <br />";
             $stmt = oci_parse($db, $sql);
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);
