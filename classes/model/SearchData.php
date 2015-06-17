@@ -13,9 +13,7 @@ class SearchData{
 	public $keywords; // Array of strings
 	public $categories; //Array of ids
 
-	public $sdImageComparison; // Class SDImageComparison
-	public $sdColor; // Class SDColor. Example: $sdColor = SDColor::BlackWhite;
-	public $sdForm; // Class SDForm. Example: $sdForm = SDForm::Circle;
+	public $comparisonPicture; // ComparisonPicture object
 
 }
 

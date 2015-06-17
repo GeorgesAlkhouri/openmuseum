@@ -14,8 +14,9 @@
 ## classes/model/
 
 - models for entities (e.g. Artist.php, Picture.php )
-- models for search data (SearchData.php, all php files with SD..)
+- models for search data (SearchData.php, ComparisonPicture.php)
 
 ## helper_not_in_project/
 
-- delete_all_tables.sql: for testing purposes - deletes all tables, indexes, sequences (execute in sql developer)
+- delete_all_tables.sql: deletes all tables, indexes, sequences (execute in sql developer)
+- drop_preferences.sql: deletes preferences
