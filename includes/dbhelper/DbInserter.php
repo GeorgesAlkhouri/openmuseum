@@ -140,7 +140,7 @@ class DbInserter
     
     function insertPictureCategoriesIfNotExists($db, $picture_id, $category_ids) {
         
-        foreach ($category_ids as $category_id) {
+        foreach ($category_ids as $category_id => $value) {
             $piccat_id = $this->dbIdFetcher->fetchPicCatId($db, $picture_id, $category_id);
             if (is_null($piccat_id)) {
                 $sql = "INSERT INTO PICTURES_CATEGORIES (piccat_id, picture_fk, category_fk) 
