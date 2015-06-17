@@ -82,6 +82,24 @@ class DbTableCreator
             oci_commit($db);
         }
     }
+
+    function createComparisonImagesTableIfNeeded(){
+
+        $table = 'comparison_pictures';
+        $table = strtoupper($table);
+
+        if (!$this->tableExists($db, $table)) {
+            
+            $sql = "CREATE TABLE $table (
+                comparison_picture_id int PRIMARY KEY, 
+                image ORDSYS.ORDImage,
+                image_sig  ORDSYS.ORDImageSignature
+                )";
+            $this->executeSql($db, $sql);
+            
+            $this->createSequence($db, $table . "_seq");
+        }
+    }
     
     function createArtistsTableIfNeeded($db) {
         
