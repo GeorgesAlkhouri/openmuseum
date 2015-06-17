@@ -100,6 +100,70 @@ class DbSearcher
         executeSql($db, $sql);
     }
 
+    /* ComparisonPicture as argument*/
+    function compare($db, $picture){
+
+        $id = $this->insertComparisonPicture($db, $picture);
+
+        $sql = "SELECT pictures.name, ORDSYS.IMGScore(123) SCORE
+                FROM pictures P, comparison_pictures C
+                WHERE C.current_picture_id=$id 
+                AND ORDSYS.IMGSimilar(P.image_sig, C.image_sig,
+                    'color=\"$picture->weightColor\" 
+                    location=\"$picture->weightColor\" 
+                    shape=\"$picture->weightColor\" 
+                    texture=\"$picture->weightColor\",
+                    $picture->threshold, 123) = 1 ORDER BY SCORE ASC;'";
+
+        executeSql($db, $sql);
+    }
+
+    /* ComparisonPicture as argument*/
+    /* Returns id of inserted picture*/
+    function insertComparisonPicture($db, $picture) {
+        
+        $sql = "CREATE OR REPLACE DIRECTORY IMGDIR02 AS '$picture->path'";
+
+        echo "$this->log - $sql <br />";
+        $stmt = oci_parse($db, $sql);
+        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+
+        $sql = "INSERT INTO comparison_pictures (
+                comparison_picture_id, 
+                image, image_sig)
+                VALUES (comparison_pictures_seq.nextval, 
+                ORDSYS.ORDImage.init('FILE', 'IMGDIR02', '$picture->name'), 
+                ORDSYS.ORDImageSignature.init()";
+
+        $sql .= "returning comparison_picture_id into :comparison_picture_id";
+
+        echo "$this->log - $sql <br />";
+        $stmt = oci_parse($db, $sql);
+
+        $currentPictureId;
+        OCIBindByName($stmt,":comparison_picture_id",$currentPictureId,32);
+
+        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+        
+        /** Create ImageSignature **/
+        $sql = "DECLARE imageObj ORDSYS.ORDImage;
+                        image_sigObj ORDSYS.ORDImageSignature;
+                BEGIN
+                    SELECT image, image_sig INTO imageObj, image_sigObj
+                    FROM comparison_pictures WHERE comparison_picture_id = $currentPictureId FOR UPDATE;
+                    image_sigObj.generateSignature(imageObj);
+                UPDATE comparison_pictures SET image_sig = image_sigObj 
+                WHERE comparison_picture_id = $currentPictureId;
+                COMMIT; END;";
+
+        echo "$this->log - $sql <br />";
+        $stmt = oci_parse($db, $sql);
+        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+        
+        oci_commit($db);
+        return $currentPictureId;
+    }
+
     function getPictureNameSearchSql($search) {
         
         return "UPPER(pictures.name) LIKE UPPER('%$search%') ";
