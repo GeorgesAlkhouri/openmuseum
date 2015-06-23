@@ -66,12 +66,6 @@ class DbInserter
         $picture->id = $this->dbIdFetcher->fetchPictureId($db, $picture);
         if (is_null($picture->id)) {
 
-            $sql = "CREATE OR REPLACE DIRECTORY IMGDIR02 AS '$picture->image_path'";
-
-            echo "$this->log - $sql <br />";
-            $stmt = oci_parse($db, $sql);
-            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
-
             $sql = "INSERT INTO pictures (
                     picture_id, name, description, 
                     image, image_sig, 
@@ -83,7 +77,7 @@ class DbInserter
                     VALUES (pictures_seq.nextval, 
                     '$picture->name', 
                     '$picture->description', 
-                    ORDSYS.ORDImage.init('FILE', 'IMGDIR02', '$picture->image_name'), 
+                    ORDSYS.ORDImage.init(), 
                     ORDSYS.ORDImageSignature.init(),
                     TO_DATE('$picture->creation_date', 'dd.mm.yyyy'), 
                     TO_DATE('$picture->upload_date', 'dd.mm.yyyy'), 
@@ -118,7 +112,12 @@ class DbInserter
             OCIBindByName($stmt,":picture_id",$currentPictureId,32);
 
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+
+
+            /** Load image data **/
             
+            $this->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId);
+
             /** Create ImageSignature **/
             $sql = "DECLARE imageObj ORDSYS.ORDImage;
                             image_sigObj ORDSYS.ORDImageSignature;
@@ -188,5 +187,51 @@ class DbInserter
         $stmt = oci_parse($db, $sql);
         oci_execute($stmt);
     }
+
+    function uploadImageData($db, $file, $currentPictureId) {
+
+                // insert the new record into the media's table and load the
+                // corresponding blob with the media's data
+                // (we use oracle's pseudo column rowid which identifies a row
+                // within a table (but not within a database) to refer to the
+                // right record later on)
+                $sql ="DECLARE
+                                obj ORDSYS.ORDImage;
+                                iblob BLOB;
+                        BEGIN
+                                SELECT image INTO obj FROM pictures
+                                WHERE PICTURE_ID = $currentPictureId FOR UPDATE;
+
+                                iblob := obj.source.localData;
+                                :extblob := iblob;
+
+                                UPDATE pictures SET image = obj WHERE PICTURE_ID = $currentPictureId;
+                        END;";
+
+                // the function OCINewDescriptor allocates storage to hold descriptors or
+                // lob locators.
+                // see http://www.php.net/manual/en/function.ocinewdescriptor.php
+                $blob = OCINewDescriptor ($db, OCI_D_LOB);
+
+                $sql = strtr ($sql,chr(13).chr(10)," ");
+                $stmt = OCIParse($db, $sql);
+
+                // the function OCIBindByName binds a PHP variable to a oracle placeholder
+                // (whether the variable will be used for input or output will be determined
+                // run-time, and the necessary storage space will be allocated)
+                // see http://www.php.net/manual/en/function.ocibindbyname.php
+                OCIBindByName($stmt, ':extblob', $blob, -1, OCI_B_BLOB);
+
+                echo "$this->log - $sql <br />";
+
+                OCIExecute ($stmt, OCI_DEFAULT);
+
+                // read the files data and load it into the blob
+
+                $blob->savefile($file);
+
+                OCIFreeStatement ($stmt);
+                $blob->free();
+        }
 }
 ?>

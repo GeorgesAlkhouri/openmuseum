@@ -172,8 +172,8 @@ class BodyController implements IController {
         $currentDate = date("j.m.Y");
 
         $picture->upload_date = $currentDate;
-        $picture->image_name = $request["picture"]["name"];
-        $picture->image_path = $request["picture"]["tmp_name"];
+        $picture->image_name = basename($request["picture"]["tmp_name"]);
+        $picture->image_path = dirname($request["picture"]["tmp_name"]) . "/";
         $picture->artist_safety_level = 100;
 
         $artist = new Artist();
