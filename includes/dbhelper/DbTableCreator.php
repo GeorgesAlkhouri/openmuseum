@@ -79,11 +79,11 @@ class DbTableCreator
 
             $sql = 'CREATE INDEX $index ON pictures ( description )
                        INDEXTYPE IS CTXSYS.CONTEXT
-                       PARAMETERS ( "LEXER mylexer STORAGE mystore SYNC (ON COMMIT)" );';
+                       PARAMETERS ( "LEXER mylexer STORAGE mystore SYNC (ON COMMIT)" )';
 
-            //echo "$this->log - $sql <br />";
-            //$stmt = oci_parse($db, $sql);
-            //oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            echo "$this->log - $sql <br />";
+            $stmt = oci_parse($db, $sql);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
             oci_commit($db);
         }
     }
