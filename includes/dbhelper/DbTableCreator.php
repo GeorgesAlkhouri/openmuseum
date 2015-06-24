@@ -57,6 +57,8 @@ class DbTableCreator
                         ctx_ddl.set_attribute ( 'mylexer', 'mixed_case', 'NO' );
                     end;";
 
+            echo "$this->log - $sql <br />";
+
             $stmt = oci_parse($db, $sql);
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);
 
@@ -69,16 +71,19 @@ class DbTableCreator
                        ctx_ddl.set_attribute('mystore', 'I_INDEX_CLAUSE', 'tablespace INDX');
                        ctx_ddl.set_attribute('mystore', 'P_TABLE_CLAUSE', 'tablespace INDX');
                     end;";
+
+            echo "$this->log - $sql <br />";
             
             $stmt = oci_parse($db, $sql);
             oci_execute($stmt, OCI_NO_AUTO_COMMIT);
 
-            $sql = "CREATE INDEX $index ON pictures ( description )
+            $sql = 'CREATE INDEX $index ON pictures ( description )
                        INDEXTYPE IS CTXSYS.CONTEXT
-                       PARAMETERS ( 'LEXER mylexer STORAGE mystore SYNC (ON COMMIT)' );";
+                       PARAMETERS ( "LEXER mylexer STORAGE mystore SYNC (ON COMMIT)" );';
 
-            $stmt = oci_parse($db, $sql);
-            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            //echo "$this->log - $sql <br />";
+            //$stmt = oci_parse($db, $sql);
+            //oci_execute($stmt, OCI_NO_AUTO_COMMIT);
             oci_commit($db);
         }
     }
