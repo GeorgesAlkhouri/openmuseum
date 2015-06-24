@@ -121,12 +121,6 @@ class DbSearcher
     /* ComparisonPicture as argument*/
     /* Returns id of inserted picture*/
     function insertComparisonPicture($db, $picture) {
-        
-        $sql = "CREATE OR REPLACE DIRECTORY IMGDIR02 AS '$picture->path'";
-
-        echo "$this->log - $sql <br />";
-        $stmt = oci_parse($db, $sql);
-        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
 
         $sql = "INSERT INTO comparison_pictures (
                 comparison_picture_id, 
@@ -144,6 +138,10 @@ class DbSearcher
         OCIBindByName($stmt,":comparison_picture_id",$currentPictureId,32);
 
         oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+
+        /** Load image data **/
+            $this->dbImageUploader = new DbImageUploader();
+            $this->dbImageUploader->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId, 'comparison_pictures');
         
         /** Create ImageSignature **/
         $sql = "DECLARE imageObj ORDSYS.ORDImage;
