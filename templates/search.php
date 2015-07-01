@@ -70,28 +70,6 @@
                             <br />
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Picture Comparing</label>
-                                    <input type="file" name="picture_comparing">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label>Color Comparing</label>
-                                <div class="input-group cp">
-                                    <input name ="picture_color" type="text" class="form-control" />
-                                    <span class="input-group-addon"><i></i></span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Texture Comparing</label>
-                                    <input type="file" name="texture_comparing">
-                                </div>
-                                <br />
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-offset-5 col-md-2">
                                 <button type="submit" class="btn btn-default btn-lg">
                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
@@ -107,11 +85,5 @@
     </div>
     <div class="col-md-2"></div>
 </div>
-<script>
-    $(function(){
-    
-                $('.cp').colorpicker();
-    });
-</script>
 </body>
 </html>

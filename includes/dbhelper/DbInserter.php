@@ -144,7 +144,7 @@ class DbInserter
             $piccat_id = $this->dbIdFetcher->fetchPicCatId($db, $picture_id, $category_id);
             if (is_null($piccat_id)) {
                 $sql = "INSERT INTO PICTURES_CATEGORIES (piccat_id, picture_fk, category_fk) 
-            VALUES (pictures_categories_seq.nextval, $picture_id, $category_id)";
+            VALUES (pictures_categories_seq.nextval, $picture_id, $value->id)";
                 $this->executeSql($db, $sql);
             }
         }

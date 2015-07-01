@@ -4,7 +4,7 @@
    <!-- Include all compiled plugins (below), or include individual files as needed -->
    <script src="js/bootstrap.min.js"></script>
    <script src="vendor/colorpicker/js/bootstrap-colorpicker.min.js"></script>
-
+   <script src="vendor/slider/js/bootstrap-slider.js"></script>
 
  <nav class="navbar navbar-default">
  <div class="container-fluid">
@@ -21,7 +21,8 @@
    <!-- Collect the nav links, forms, and other content for toggling -->
    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
      <ul class="nav navbar-nav">
-       <li <?php if ($this->_['active'] === 'search') echo 'class="active"'; ?>><a href="?view=search">Search<span class="sr-only">(current)</span></a></li>
+       <li <?php if ($this->_['active'] === 'search') echo 'class="active"'; ?>><a href="?view=search">Text Search<span class="sr-only">(current)</span></a></li>
+       <li <?php if ($this->_['active'] === 'picture_search') echo 'class="active"'; ?>><a href="?view=picture_search">Picture Comparison</a></li>
        <li <?php if ($this->_['active'] === 'upload') echo 'class="active"'; ?>><a href="?view=upload">Upload</a></li>
      </ul>
      <div class="navbar-right">
