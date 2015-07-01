@@ -15,6 +15,9 @@ class BodyController implements IController {
         } else if (isset($request["action"]) && strcmp($request["action"], "search") == 0) {
 
             $this->search($request);
+        } elseif (isset($request["action"]) && strcmp($request["action"], "picture_search") == 0) {
+        	
+        	
         }
     }
 
