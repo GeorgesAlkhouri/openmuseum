@@ -141,24 +141,18 @@ class DbInserter
     function insertPictureCategoriesIfNotExists($db, $picture_id, $category_ids) {
         
         foreach ($category_ids as $category_id => $value) {
-            $piccat_id = $this->dbIdFetcher->fetchPicCatId($db, $picture_id, $category_id);
-            if (is_null($piccat_id)) {
-                $sql = "INSERT INTO PICTURES_CATEGORIES (piccat_id, picture_fk, category_fk) 
+            $sql = "INSERT INTO PICTURES_CATEGORIES (piccat_id, picture_fk, category_fk) 
             VALUES (pictures_categories_seq.nextval, $picture_id, $value->id)";
-                $this->executeSql($db, $sql);
-            }
+            $this->executeSql($db, $sql);
         }
     }
     
     function insertPictureKeywordsIfNotExists($db, $picture_id, $keyword_ids) {
         
         foreach ($keyword_ids as $keyword_id) {
-            $pickey_id = $this->dbIdFetcher->fetchPicKeyId($db, $picture_id, $keyword_id);
-            if (is_null($pickey_id)) {
-                $sql = "INSERT INTO PICTURES_KEYWORDS (pickey_id, picture_fk, keyword_fk) 
+            $sql = "INSERT INTO PICTURES_KEYWORDS (pickey_id, picture_fk, keyword_fk) 
             VALUES (pictures_keywords_seq.nextval, $picture_id, $keyword_id)";
-                $this->executeSql($db, $sql);
-            }
+            $this->executeSql($db, $sql);
         }
     }
     
