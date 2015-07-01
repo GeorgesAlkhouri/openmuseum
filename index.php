@@ -11,7 +11,9 @@
     include("classes/model/Owner.php");
     include("classes/model/Picture.php");
     include("classes/model/SearchData.php");
+    include("classes/model/DisplayPicture.php");
     include("includes/DbManager.php");
+
 
     $request = array_merge($_GET, $_POST, $_FILES);
     
