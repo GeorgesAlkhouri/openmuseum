@@ -13,5 +13,8 @@
     <!-- Colorpicker for Bootstrap -->
     <link href="vendor/colorpicker/css/bootstrap-colorpicker.min.css" rel="stylesheet">
 
+    <!-- Slider for Bootstrap -->
+    <link href="vendor/slider/css/bootstrap-slider.css" rel="stylesheet">
+
     <link href="css/custom.css" rel="stylesheet">
   </head>

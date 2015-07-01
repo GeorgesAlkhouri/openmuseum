@@ -4,7 +4,7 @@
    <!-- Include all compiled plugins (below), or include individual files as needed -->
    <script src="js/bootstrap.min.js"></script>
    <script src="vendor/colorpicker/js/bootstrap-colorpicker.min.js"></script>
-
+   <script src="vendor/slider/js/bootstrap-slider.js"></script>
 
  <nav class="navbar navbar-default">
  <div class="container-fluid">
