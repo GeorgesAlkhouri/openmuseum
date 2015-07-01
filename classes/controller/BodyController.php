@@ -17,7 +17,7 @@ class BodyController implements IController {
             $this->search($request);
         } elseif (isset($request["action"]) && strcmp($request["action"], "picture_search") == 0) {
         	
-        	
+        	$this->pictureSearch($request);
         }
     }
 
@@ -29,18 +29,9 @@ class BodyController implements IController {
         return $view->loadTemplate();
     }
 
-    public function search($request) {
+    public function pictureSearch($request) {
 
-        $searchAll = $this->prepareInput($request["search_all"]);
-        $pictureName = $this->prepareInput($request["search_picture_name"]);
-        $artist = $this->prepareInput($request["search_picture_artist"]);
-        $museum = $this->prepareInput($request["search_picture_museum"]);
-        $owner = $this->prepareInput($request["search_picture_owner"]);
-        $keywords = $this->prepareKeywords($request["search_picture_keywords"]);
-        $description = $this->prepareInput($request["search_picture_decription"]);
-        $categories = $this->mapCategories($request["search_category"]);
-
-        if (is_uploaded_file($request["picture_comparing"]["tmp_name"])) {
+    	if (is_uploaded_file($request["picture_comparing"]["tmp_name"])) {
 
             if (!$this->validateFile($request["picture_comparing"])) {
 
@@ -57,6 +48,18 @@ class BodyController implements IController {
                 return;
             }
         }
+    }
+
+    public function search($request) {
+
+        $searchAll = $this->prepareInput($request["search_all"]);
+        $pictureName = $this->prepareInput($request["search_picture_name"]);
+        $artist = $this->prepareInput($request["search_picture_artist"]);
+        $museum = $this->prepareInput($request["search_picture_museum"]);
+        $owner = $this->prepareInput($request["search_picture_owner"]);
+        $keywords = $this->prepareKeywords($request["search_picture_keywords"]);
+        $description = $this->prepareInput($request["search_picture_decription"]);
+        $categories = $this->mapCategories($request["search_category"]);
 
         //TODO: Finish search data validation --> do search
 
@@ -202,8 +205,6 @@ class BodyController implements IController {
         // echo " Artist " . $artist . "<br>" ;
         // echo " Categories " . print_r($categories);
         
-        echo "PRE";
-
         DbManager::Instance()->insertUserDataInDb($picture, $artist, $museum, $owner, $keywords, $categories);
     }
 
@@ -212,7 +213,7 @@ class BodyController implements IController {
         array_walk($categories, function(&$key, $value) {
 
             $category = new Category();
-            $category->id = $value;
+            $category->id = $value + 1;
             $category->title = $key;
 
             $key = $category;
