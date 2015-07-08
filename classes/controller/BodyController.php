@@ -239,6 +239,9 @@ class BodyController implements IController {
 
     private function mapCategories($categories) {
 
+        if (count($categories) == 0)
+        return NULL;
+
         array_walk($categories, function(&$key, $value) {
 
             $category = new Category();
