@@ -70,6 +70,13 @@ class DbSearcher
 
         /* Search for Categories Information */
 
+        if(!empty($searchData->keywords)){
+            $sqlFrom .= " LEFT JOIN pictures_categories on pictures.picture_id = pictures_categories.picture_fk  LEFT JOIN categories
+            on categories.category_id = pictures_categories.picture_fk ";
+            if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
+            $sqlWhere .= $this->getCategoriesSearchSql($searchData->categories);
+            $addOperator = true;
+        }
         
         $sql = $sqlSelect.$sqlFrom.$sqlWhere;
 
@@ -288,6 +295,17 @@ class DbSearcher
             pictures.owner_fk = owners.owner_id AND
             concat(concat(UPPER(owners.firstname), ' '), UPPER(owners.lastname)) LIKE UPPER('%$search%')
             )";
+    }
+
+    function getCategoriesSearchSql($categories) {
+        
+        $sql = "
+            pictures.picture_id = pictures_cateogies.picture_fk AND
+            categories.category_id = pictures_cateogies.picture_fk ";
+        foreach ($categories as $category) {
+           $sql .= " AND UPPER(category.category_id) LIKE UPPER('%$category%') ";
+        }
+        return $sql;
     }
 
 
