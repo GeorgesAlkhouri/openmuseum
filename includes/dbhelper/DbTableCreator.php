@@ -17,6 +17,7 @@ class DbTableCreator
         $this->createPicturesTableIfNeeded($db);
         $this->createPicturesCategoriesTableIfNeeded($db);
         $this->createPicturesKeywordsTableIfNeeded($db);
+        $this->createComparisonImagesTableIfNeeded($db);
     }
     
     function createPicturesTableIfNeeded($db) {
@@ -88,7 +89,7 @@ class DbTableCreator
         }
     }
 
-    function createComparisonImagesTableIfNeeded(){
+    function createComparisonImagesTableIfNeeded($db){
 
         $table = 'comparison_pictures';
         $table = strtoupper($table);

@@ -20,10 +20,10 @@ class DbInserter
                 comparison_picture_id, 
                 image, image_sig)
                 VALUES (comparison_pictures_seq.nextval, 
-                ORDSYS.ORDImage.init('FILE', 'IMGDIR02', '$picture->name'), 
-                ORDSYS.ORDImageSignature.init()";
+                ORDSYS.ORDImage.init('FILE', 'IMGDIR02', '$picture->image_name'), 
+                ORDSYS.ORDImageSignature.init())";
 
-        $sql .= "returning comparison_picture_id into :comparison_picture_id";
+        $sql .= " returning comparison_picture_id into :comparison_picture_id";
 
         echo "$this->log - $sql <br />";
         $stmt = oci_parse($db, $sql);
@@ -35,7 +35,7 @@ class DbInserter
 
         /** Load image data **/
             $this->dbImageUploader = new DbImageUploader();
-            $this->dbImageUploader->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId, 'comparison_pictures');
+            $this->dbImageUploader->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId, 'comparison_pictures', 'comparison_picture_id');
         
         /** Create ImageSignature **/
         $sql = "DECLARE imageObj ORDSYS.ORDImage;
@@ -161,7 +161,7 @@ class DbInserter
 
             /** Load image data **/
             $this->dbImageUploader = new DbImageUploader();
-            $this->dbImageUploader->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId, 'pictures');
+            $this->dbImageUploader->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId, 'pictures', 'picture_id');
 
             /** Create ImageSignature **/
             $sql = "DECLARE imageObj ORDSYS.ORDImage;

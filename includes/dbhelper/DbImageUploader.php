@@ -2,13 +2,13 @@
 
 class DbImageUploader{
 
-	private $log;
+    private $log;
 
-	function DbImageUploader() {
+    function DbImageUploader() {
         $this->log = 'DbImageUploader';
     }
 
-	function uploadImageData($db, $file, $currentPictureId, $table) {
+    function uploadImageData($db, $file, $currentPictureId, $table, $id) {
 
         // insert the new record into the media's table and load the
         // corresponding blob with the media's data
@@ -20,12 +20,12 @@ class DbImageUploader{
                         iblob BLOB;
                 BEGIN
                         SELECT image INTO obj FROM $table
-                        WHERE PICTURE_ID = $currentPictureId FOR UPDATE;
+                        WHERE $id = $currentPictureId FOR UPDATE;
 
                         iblob := obj.source.localData;
                         :extblob := iblob;
 
-                        UPDATE pictures SET image = obj WHERE PICTURE_ID = $currentPictureId;
+                        UPDATE $table SET image = obj WHERE $id = $currentPictureId;
                 END;";
 
         // the function OCINewDescriptor allocates storage to hold descriptors or

@@ -121,15 +121,15 @@ class DbSearcher
         $inserter = new DbInserter();
         $id = $inserter->insertComparisonPicture($db, $picture);
 
-        $sql = "SELECT pictures.name, ORDSYS.IMGScore(123) SCORE
+        $sql = "SELECT P.picture_id, ORDSYS.IMGScore(123) SCORE
                 FROM pictures P, comparison_pictures C
-                WHERE C.current_picture_id=$id 
+                WHERE C.comparison_picture_id=$id 
                 AND ORDSYS.IMGSimilar(P.image_sig, C.image_sig,
                     'color=\"$picture->weightColor\" 
                     location=\"$picture->weightColor\" 
                     shape=\"$picture->weightColor\" 
-                    texture=\"$picture->weightColor\",
-                    $picture->threshold, 123) = 1 ORDER BY SCORE ASC;'";
+                    texture=\"$picture->weightColor\"',
+                    $picture->threshold, 123) = 1 ORDER BY SCORE ASC";
 
         $result = $this->executeSql($db, $sql);
         $pictures = $this->getPicturesArrayFromResult($db, $result);
