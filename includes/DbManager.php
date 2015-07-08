@@ -79,10 +79,24 @@ final class DbManager
         $dbInserter->insertPictureKeywordsIfNotExists($this->db, $picture->id, $keyword_ids);
     }
 
-    function searchPictures($searchData){
+    /* 
+    searchData is an instance of SearchData class
+    return an array of DiplayPicture objects
+    */
+    function search($searchData){
 
         $dbSearcher = new DbSearcher();
         $dbSearcher->search($this->db, $searchData);
+    }
+
+    /*
+    comparePicture is an instance of ComparePicture class
+    return an array of DiplayPicture objects
+    */
+    function compare($comparePicture){
+
+        $dbSearcher = new DbSearcher();
+        $dbSearcher->compare($this->db, $comparePicture);
     }
 }
 ?>
