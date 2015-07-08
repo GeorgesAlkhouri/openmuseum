@@ -97,8 +97,8 @@ class DbSearcher
             }
         }
         
-        $result = executeSql($db, $sql);
-        $pictures = getPicturesArrayFromResult($result);
+        $result = this->executeSql($db, $sql);
+        $pictures = this->getPicturesArrayFromResult($result);
         return $pictures;
     }
 
@@ -117,8 +117,8 @@ class DbSearcher
                     texture=\"$picture->weightColor\",
                     $picture->threshold, 123) = 1 ORDER BY SCORE ASC;'";
 
-        $result = executeSql($db, $sql);
-        $pictures = getPicturesArrayFromResult($result);
+        $result = this->executeSql($db, $sql);
+        $pictures = this->getPicturesArrayFromResult($result);
         return $pictures;
     }
 
@@ -268,7 +268,7 @@ class DbSearcher
     function getArtistForId($artist_id){
 
         $sql = "SELECT firstname, lastname, birth_date, death_date FROM artists WHERE artist_id = '$artist_id'";
-        $result = executeSql($db, $sql);
+        $result = this->executeSql($db, $sql);
 
         $artist = new Artist();
 
@@ -284,7 +284,7 @@ class DbSearcher
     function getMuseumForId($museum_id){
 
         $sql = "SELECT name, adress, website FROM museums WHERE museum_id = '$museum_id'";
-        $result = executeSql($db, $sql);
+        $result = this->executeSql($db, $sql);
 
         $museum = new Museum();
 
@@ -299,7 +299,7 @@ class DbSearcher
     function getOwnerForId($owner_id){
 
         $sql = "SELECT firstname, lastname FROM owners WHERE owner_id = '$owner_id'";
-        $result = executeSql($db, $sql);
+        $result = this->executeSql($db, $sql);
 
         $owner = new Owner();
 
