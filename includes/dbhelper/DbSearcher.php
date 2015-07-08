@@ -84,31 +84,17 @@ class DbSearcher
 
         if (!empty($searchData->txtDefault)) {
             $search = $searchData->txtDefault;
-
-            if (empty($searchData->txtPictureName)) {
-                if ($addOperator) { $sqlWhere .= $allOperator;}
-                $sqlWhere .= $this->getPictureNameSearchSql($search);
-            }
-            if (empty($searchData->txtDescription)) {
-                if ($addOperator) { $sqlWhere .= $allOperator;}
-                $sqlWhere .= $this->getPictureDescriptionSearchSql($search);
-            }
-            if (empty($searchData->txtArtist)) {
-                if ($addOperator) { $sqlWhere .= $allOperator;}
-                $sqlWhere .= $this->getArtistSearchSql($search);
-            }
-            if (empty($searchData->txtMuseumOwnes)) {
-                if ($addOperator) { $sqlWhere .= $allOperator;}
-                $sqlWhere .= $this->getMuseumOwnesSearchSql($search);
-            }
-            if (empty($searchData->txtMuseumExhibits)) {
-                if ($addOperator) { $sqlWhere .= $allOperator;}
-                $sqlWhere .= $this->getMuseumExhibitsSearchSql($search);
-            }
-            if (empty($searchData->txtOwner)) {
-                if ($addOperator) { $sqlWhere .= $allOperator;}
-                $sqlWhere .= $this->getOwnerSearchSql($search);
-            }
+            $sqlWhere .= $this->getPictureNameSearchSql($search);
+            $sqlWhere .= $allOperator;
+            $sqlWhere .= $this->getPictureDescriptionSearchSql($search);
+            $sqlWhere .= $allOperator;
+            $sqlWhere .= $this->getArtistSearchSql($search);
+            $sqlWhere .= $allOperator;
+            $sqlWhere .= $this->getMuseumOwnesSearchSql($search);
+            $sqlWhere .= $allOperator;
+            $sqlWhere .= $this->getMuseumExhibitsSearchSql($search);
+            $sqlWhere .= $allOperator;
+            $sqlWhere .= $this->getOwnerSearchSql($search);  
         }
         
         $sql = $sqlSelect.$sqlFrom.$sqlWhere;
