@@ -73,27 +73,36 @@ class BodyController implements IController {
 
     public function search($request) {
 
-        $searchAll = $this->prepareInput($request["search_all"]);
-        $pictureName = $this->prepareInput($request["search_picture_name"]);
-        $artist = $this->prepareInput($request["search_picture_artist"]);
-        $museum = $this->prepareInput($request["search_picture_museum"]);
-        $owner = $this->prepareInput($request["search_picture_owner"]);
-        $keywords = $this->prepareKeywords($request["search_picture_keywords"]);
-        $description = $this->prepareInput($request["search_picture_decription"]);
-        $categories = NULL;
-        if (isset($request["search_category"]))
-          $this->mapCategories($request["search_category"]);
-
         $searchData = new SearchData();
-        $searchData->txtDefault = $searchAll;
-        $searchData->txtPictureName = $pictureName;
-        $searchData->txtArtist = $artist;
-        $searchData->txtOwner = $owner;
-        $searchData->txtDescription = $description;
-        $searchData->keywords = $keywords;
-        $searchData->categories = $categories;
 
-        DbManager::Instance()->search($searchData);
+        if (strlen($this->prepareInput($request["search_all"])) > 0) {
+
+            $searchAll = $this->prepareInput($request["search_all"]);
+
+            DbManager::Instance()->searchAll($searchData);
+        } else {
+
+            $pictureName = $this->prepareInput($request["search_picture_name"]);
+            $artist = $this->prepareInput($request["search_picture_artist"]);
+            $museum = $this->prepareInput($request["search_picture_museum"]);
+            $owner = $this->prepareInput($request["search_picture_owner"]);
+            $keywords = $this->prepareKeywords($request["search_picture_keywords"]);
+            $description = $this->prepareInput($request["search_picture_decription"]);
+            $categories = NULL;
+            if (isset($request["search_category"]))
+              $this->mapCategories($request["search_category"]);
+
+
+            $searchData->txtDefault = $searchAll;
+            $searchData->txtPictureName = $pictureName;
+            $searchData->txtArtist = $artist;
+            $searchData->txtOwner = $owner;
+            $searchData->txtDescription = $description;
+            $searchData->keywords = $keywords;
+            $searchData->categories = $categories;
+
+            DbManager::Instance()->searchDetails($searchData);
+        }
     }
 
     public function upload($request) {
