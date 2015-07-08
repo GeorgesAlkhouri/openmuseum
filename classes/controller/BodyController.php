@@ -53,9 +53,9 @@ class BodyController implements IController {
             $comparisonPicture->image_path = $request["picture_comparing"]["tmp_name"];
             $comparisonPicture->image_name = $request["picture_comparing"]["name"];
 
+            DbManager::Instance()->compare($comparisonPicture);
         }
-
-        if (is_uploaded_file($request["texture_comparing"]["tmp_name"])) {
+        else if (is_uploaded_file($request["texture_comparing"]["tmp_name"])) {
 
             if (!$this->validateFile($request["texture_comparing"])) {
 
@@ -66,6 +66,34 @@ class BodyController implements IController {
             $comparisonPicture->setTextureSearchValues();
             $comparisonPicture->image_path = $request["texture_comparing"]["tmp_name"];
             $comparisonPicture->image_name = $request["texture_comparing"]["name"];
+
+            DbManager::Instance()->compare($comparisonPicture);
+        }
+        else if ( strlen($request["picture_color"]) > 0 ){
+
+            //Color compare
+            $comparisonPicture->setColorSearchValues();
+
+            $image = imagecreatetruecolor(200, 200);
+            // sets background to color
+
+            $rgb = $this->hex2rgb($request["picture_color"]);
+            $color = imagecolorallocate($image, $rgb[0], $rgb[1], $rgb[2]);
+
+            imagefill($image, 0, 0, $color);
+
+            $name = "color_pic.png";
+            $path = sys_get_temp_dir();
+
+            ob_clean();
+            header('Content-type: image/png');
+            imagepng($image, $path . "/" . $name);
+            imagedestroy($image);
+
+            $comparisonPicture->image_path = $path;
+            $comparisonPicture->image_name = $name;
+
+            DbManager::Instance()->compare($comparisonPicture);
         }
 
 
@@ -313,6 +341,23 @@ class BodyController implements IController {
     	$uploadedFileType = $data["type"];
 
     	return in_array($uploadedFileType, $allowedFileTypes);
+    }
+
+    function hex2rgb($hex) {
+       $hex = str_replace("#", "", $hex);
+
+       if(strlen($hex) == 3) {
+          $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+          $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+          $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+       } else {
+          $r = hexdec(substr($hex,0,2));
+          $g = hexdec(substr($hex,2,2));
+          $b = hexdec(substr($hex,4,2));
+       }
+       $rgb = array($r, $g, $b);
+       //return implode(",", $rgb); // returns the rgb values separated by commas
+       return $rgb; // returns an array with the rgb values
     }
 
 }
