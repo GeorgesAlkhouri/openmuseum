@@ -20,7 +20,7 @@ class DbImageRetriever{
         $sql = "DECLARE
                         obj ORDSYS.ORDImage;
                 BEGIN
-                        SELECT $column INTO obj FROM $table WHERE id = :id;
+                        SELECT $column INTO obj FROM $table WHERE picture_id = :id;
                         :extblob := obj.getContent;
                 END;";
         $sql = strtr ($sql,chr(13).chr(10)," ");
@@ -32,7 +32,6 @@ class DbImageRetriever{
         // run-time, and the necessary storage space will be allocated)
         // see http://www.php.net/manual/en/function.ocibindbyname.php
         OCIBindByName ($stmt, ':extBlob', $blob, -1, OCI_B_BLOB);
-        OCIBindByName ($stmt, ':mimeType', $mimetype, 20);
         OCIBindByName ($stmt, ':id', $id);
 
         OCIExecute ($stmt, OCI_DEFAULT);
