@@ -73,40 +73,42 @@ class DbSearcher
 
     function searchAll($db, $searchData){
 
-        $sql;
-        $allOperator = " OR "; // when user wants to search in all fields
-        $keywordOperator = " AND "; // change to OR when result set not satisfied
-        $addOperator = false;
-
-        $sqlSelect = $this->getPictureSelectSql();
-        $sqlFrom = " FROM pictures ";
-        $sqlWhere = "WHERE ";
+        echo "TXTDEFAULT: ".$searchData->txtDefault; 
+        $searchData->txtDefault = "sd";
 
         if (!empty($searchData->txtDefault)) {
+
             $search = $searchData->txtDefault;
-            $sqlWhere .= $this->getPictureNameSearchSql($search);
-            $sqlWhere .= $allOperator;
-            $sqlWhere .= $this->getPictureDescriptionSearchSql($search);
-            $sqlWhere .= $allOperator;
-            $sqlWhere .= $this->getArtistSearchSql($search);
-            $sqlWhere .= $allOperator;
-            $sqlWhere .= $this->getMuseumOwnesSearchSql($search);
-            $sqlWhere .= $allOperator;
-            $sqlWhere .= $this->getMuseumExhibitsSearchSql($search);
-            $sqlWhere .= $allOperator;
-            $sqlWhere .= $this->getOwnerSearchSql($search);  
+            $allOperator = " OR "; // when user wants to search in all fields
+            $keywordOperator = " AND "; // change to OR when result set not satisfied
+            $addOperator = false;
+
+            $sql = "SELECT pictures.picture_id FROM pictures, artists WHERE ";
+            $sql .= $this->getPictureNameSearchSql($search);
+            $sql .= $allOperator;
+            $sql .= $this->getPictureDescriptionSearchSql($search);
+            $sql .= $allOperator;
+            $sql .= $this->getArtistSearchSql($search);
+            $sql .= " UNION SELECT pictures.picture_id FROM pictures, museums "." WHERE ";
+            $sql .= $this->getMuseumOwnesSearchSql($search);
+            $sql .= $allOperator;
+            $sql .= $this->getMuseumExhibitsSearchSql($search);
+            $sql .= " UNION SELECT pictures.picture_id FROM pictures, owners "." WHERE ";
+            $sql .= $this->getOwnerSearchSql($search);  
+
+            $result = $this->executeSql($db, $sql);
+            $pictures = $this->getPicturesArrayFromResult($db, $result);
+            return $pictures;
+        }else{
+            echo "$this->log - search word is empty";
         }
-        
-        $sql = $sqlSelect.$sqlFrom.$sqlWhere;
-        $result = $this->executeSql($db, $sql);
-        $pictures = $this->getPicturesArrayFromResult($result);
-        return $pictures;
     }
 
     /* ComparisonPicture as argument*/
     function compare($db, $picture){
 
-        $id = $this->insertComparisonPicture($db, $picture);
+        $inserter = new DbInserter();
+        $id = $inserter->insertComparisonPicture($db, $picture);
 
         $sql = "SELECT pictures.name, ORDSYS.IMGScore(123) SCORE
                 FROM pictures P, comparison_pictures C
@@ -119,64 +121,20 @@ class DbSearcher
                     $picture->threshold, 123) = 1 ORDER BY SCORE ASC;'";
 
         $result = $this->executeSql($db, $sql);
-        $pictures = $this->getPicturesArrayFromResult($result);
+        $pictures = $this->getPicturesArrayFromResult($db, $result);
         return $pictures;
     }
 
     function getPictureSelectSql(){
 
-        $sql = "SELECT name, description, 
-                    image, image_sig, 
-                    creation_date, upload_date, 
-                    artist_fk, artist_safety_level,
-                    museum_ownes_fk, museum_exhibits_fk, 
-                    museum_exhibits_startdate, museum_exhibits_enddate, 
-                    owner_fk";
+        $sql = "SELECT pictures.name, pictures.description, 
+                    pictures.image, pictures.image_sig, 
+                    pictures.creation_date, pictures.upload_date, 
+                    pictures.artist_fk, pictures.artist_safety_level,
+                    pictures.museum_ownes_fk, pictures.museum_exhibits_fk, 
+                    pictures.museum_exhibits_startdate, pictures.museum_exhibits_enddate, 
+                    pictures.owner_fk";
         return $sql;
-    }
-
-    /* ComparisonPicture as argument*/
-    /* Returns id of inserted picture*/
-    function insertComparisonPicture($db, $picture) {
-
-        $sql = "INSERT INTO comparison_pictures (
-                comparison_picture_id, 
-                image, image_sig)
-                VALUES (comparison_pictures_seq.nextval, 
-                ORDSYS.ORDImage.init('FILE', 'IMGDIR02', '$picture->name'), 
-                ORDSYS.ORDImageSignature.init()";
-
-        $sql .= "returning comparison_picture_id into :comparison_picture_id";
-
-        echo "$this->log - $sql <br />";
-        $stmt = oci_parse($db, $sql);
-
-        $currentPictureId;
-        OCIBindByName($stmt,":comparison_picture_id",$currentPictureId,32);
-
-        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
-
-        /** Load image data **/
-            $this->dbImageUploader = new DbImageUploader();
-            $this->dbImageUploader->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId, 'comparison_pictures');
-        
-        /** Create ImageSignature **/
-        $sql = "DECLARE imageObj ORDSYS.ORDImage;
-                        image_sigObj ORDSYS.ORDImageSignature;
-                BEGIN
-                    SELECT image, image_sig INTO imageObj, image_sigObj
-                    FROM comparison_pictures WHERE comparison_picture_id = $currentPictureId FOR UPDATE;
-                    image_sigObj.generateSignature(imageObj);
-                UPDATE comparison_pictures SET image_sig = image_sigObj 
-                WHERE comparison_picture_id = $currentPictureId;
-                COMMIT; END;";
-
-        echo "$this->log - $sql <br />";
-        $stmt = oci_parse($db, $sql);
-        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
-        
-        oci_commit($db);
-        return $currentPictureId;
     }
 
     function getPictureNameSearchSql($search) {
@@ -193,7 +151,7 @@ class DbSearcher
         
         return "(
             pictures.artist_fk = artists.artist_id AND
-            concat(concat(UPPER(artists.firstname), ' '), UPPER(artists.firstname)) LIKE UPPER('%$search%')
+            concat(concat(UPPER(artists.firstname), ' '), UPPER(artists.lastname)) LIKE UPPER('%$search%')
                     )";
     }
 
@@ -226,46 +184,55 @@ class DbSearcher
         
         return "(
             pictures.owner_fk = owners.owner_id AND
-            concat(concat(UPPER(owners.firstname), ' '), UPPER(owners.firstname)) LIKE UPPER('%$search%')
+            concat(concat(UPPER(owners.firstname), ' '), UPPER(owners.lastname)) LIKE UPPER('%$search%')
             )";
     }
-    
-    function executeSql($db, $sql) {
-        
-        echo "$this->log - $sql <br />";
-        $stmt = oci_parse($db, $sql);
-        oci_execute($stmt);
-        return $stmt;
-    }
 
-    function getPicturesArrayFromResult($stmt){
+    /*
+    goes through result with picture ids, fetches all needed picture data and creates a display picture
+    returns an array of display pictures
+    */
+    function getPicturesArrayFromResult($db, $stmt){
 
         $pictures = array();
-        while (oci_fetch($stmt)) {
-            echo oci_result($stmt, 'NAME');
-            $artist_fk = oci_result($stmt, 'artist_fk');
-            $museum_owns_fk = oci_result($stmt, 'museum_owns_fk');
-            $museum_exhibits_fk = oci_result($stmt, 'museum_exhibits_fk');
-            $owner_fk = oci_result($stmt, 'owner_fk');
-            $picture_id = oci_result($stmt, 'picture_id');
 
-            $picture = new DisplayPicture();
-            $picture->name = oci_result($stmt, 'NAME');
-            $picture->description = oci_result($stmt, 'description');
-            $picture->creation_date = oci_result($stmt, 'creation_date');
-            $picture->upload_date = oci_result($stmt, 'upload_date');
-            $picture->artist = $this->getArtistForId($artist_fk);
-            $picture->artist_safety_level = oci_result($stmt, 'artist_safety_level');
-            $picture->museum_owns = $this->getMuseumForId($museum_owns_fk);
-            $picture->museum_exhibits = $this->getMuseumForId($museum_exhibits_fk);
-            $picture->museum_exhibits_startdate = oci_result($stmt, 'museum_exhibits_startdate');
-            $picture->museum_exhibits_enddate = oci_result($stmt, 'museum_exhibits_enddate');
-            $picture->artist_safety_level = oci_result($stmt, 'artist_safety_level');
-            $picture->owner = $this->getOwnerForId($owner_fk);
-            $picture->image_data = $this->loadImageData($db, $picture_id, "pictures", "image");
-            array_push($pictures, $picture);
+        while (oci_fetch($stmt)) {
+            echo "<br \> $this->log: result picture_id: ".oci_result($stmt, 'PICTURE_ID')."<br \>";
+
+            $picture_id = oci_result($stmt, 'PICTURE_ID');
+            $displayPic = $this->getDiplayPictureForId($db, $picture_id);
+            array_push($pictures, $displayPic);
         }
         return $pictures;
+    }
+
+    function getDiplayPictureForId($db, $id){
+
+        $sql = $this->getPictureSelectSql()." FROM pictures WHERE picture_id = $id";
+        $imgResult = $this->executeSql($db, $sql);
+
+        oci_fetch_object($imgResult);
+
+        $artist_fk = oci_result($imgResult, 'ARTIST_FK');
+        $museum_owns_fk = oci_result($imgResult, 'MUSEUM_OWNS_FK');
+        $museum_exhibits_fk = oci_result($imgResult, 'MUSEUM_EXHIBITS_FK');
+        $owner_fk = oci_result($imgResult, 'OWNER_FK');
+
+        $picture = new DisplayPicture();
+        $picture->name = oci_result($imgResult, 'NAME');
+        $picture->description = oci_result($imgResult, 'DESCRIPTION');
+        $picture->creation_date = oci_result($imgResult, 'CREATION_DATE');
+        $picture->upload_date = oci_result($imgResult, 'UPLOAD_DATE');
+        $picture->artist = $this->getArtistForId($db, $artist_fk);
+        $picture->artist_safety_level = oci_result($imgResult, 'ARTIST_SAFETY_LEVEL');
+        $picture->museum_owns = $this->getMuseumForId($db, $museum_owns_fk);
+        $picture->museum_exhibits = $this->getMuseumForId($db, $museum_exhibits_fk);
+        $picture->museum_exhibits_startdate = oci_result($imgResult, 'MUSEUM_EXHIBITS_STARTDATE');
+        $picture->museum_exhibits_enddate = oci_result($imgResult, 'MUSEUM_EXHIBITS_ENDDATE');
+        $picture->artist_safety_level = oci_result($imgResult, 'ARTIST_SAFETY_LEVEL');
+        $picture->owner = $this->getOwnerForId($db, $owner_fk);
+        $picture->image_data = $this->loadImageData($db, $id, "pictures", "image");
+        return $picture;
     }
 
     function loadImageData($db, $id, $table, $column){
@@ -275,49 +242,62 @@ class DbSearcher
         return $data;
     }
 
-    function getArtistForId($artist_id){
+    function getArtistForId($db, $artist_id){
+        if (!empty($artist_id)) {
+            $sql = "SELECT firstname, lastname, birth_date, death_date FROM artists WHERE artist_id = '$artist_id'";
+            $result = $this->executeSql($db, $sql);
 
-        $sql = "SELECT firstname, lastname, birth_date, death_date FROM artists WHERE artist_id = '$artist_id'";
-        $result = $this->executeSql($db, $sql);
+            $artist = new Artist();
 
-        $artist = new Artist();
-
-        while (oci_fetch($result)) {
-            $artist->firstname = oci_result($result, 'firstname');
-            $artist->lastname = oci_result($result, 'lastname');
-            $artist->birth_date = oci_result($result, 'birth_date');
-            $artist->death_date = oci_result($result, 'death_date');
+            while (oci_fetch($result)) {
+                $artist->firstname = oci_result($result, 'firstname');
+                $artist->lastname = oci_result($result, 'lastname');
+                $artist->birth_date = oci_result($result, 'birth_date');
+                $artist->death_date = oci_result($result, 'death_date');
+            }
+            return $artist;
         }
-        return $artist;
     }
 
-    function getMuseumForId($museum_id){
+    function getMuseumForId($db, $museum_id){
 
-        $sql = "SELECT name, adress, website FROM museums WHERE museum_id = '$museum_id'";
-        $result = $this->executeSql($db, $sql);
-
-        $museum = new Museum();
-
-        while (oci_fetch($result)) {
-            $museum->name = oci_result($result, 'name');
-            $museum->adress = oci_result($result, 'adress');
-            $museum->website = oci_result($result, 'website');
+        if (!empty($museum_id)){
+            $sql = "SELECT name, adress, website FROM museums WHERE museum_id = '$museum_id'";
+            $result = $this->executeSql($db, $sql);
+    
+            $museum = new Museum();
+    
+            while (oci_fetch($result)) {
+                $museum->name = oci_result($result, 'name');
+                $museum->adress = oci_result($result, 'adress');
+                $museum->website = oci_result($result, 'website');
+            }
+            return $museum;
         }
-        return $museum;
     }
 
-    function getOwnerForId($owner_id){
+    function getOwnerForId($db, $owner_id){
 
-        $sql = "SELECT firstname, lastname FROM owners WHERE owner_id = '$owner_id'";
-        $result = $this->executeSql($db, $sql);
+        if (!empty($owner_id)){
+            $sql = "SELECT firstname, lastname FROM owners WHERE owner_id = '$owner_id'";
+            $result = $this->executeSql($db, $sql);
 
-        $owner = new Owner();
+            $owner = new Owner();
 
-        while (oci_fetch($result)) {
-            $owner->firstname = oci_result($result, 'firstname');
-            $owner->lastname = oci_result($result, 'lastname');
-        }
-        return $owner;
+            while (oci_fetch($result)) {
+                $owner->firstname = oci_result($result, 'firstname');
+                $owner->lastname = oci_result($result, 'lastname');
+            }
+            return $owner;
+        }  
+    }
+
+    function executeSql($db, $sql) {
+        
+        echo "<br \> $this->log - $sql <br />";
+        $stmt = oci_parse($db, $sql);
+        oci_execute($stmt);
+        return $stmt;
     }
 }
 ?>

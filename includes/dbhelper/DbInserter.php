@@ -11,6 +11,50 @@ class DbInserter
         $this->log = 'DbInserter';
         $this->dbIdFetcher = new DbIdFetcher();
     }
+
+    /* ComparisonPicture as argument*/
+    /* Returns id of inserted picture*/
+    function insertComparisonPicture($db, $picture) {
+
+        $sql = "INSERT INTO comparison_pictures (
+                comparison_picture_id, 
+                image, image_sig)
+                VALUES (comparison_pictures_seq.nextval, 
+                ORDSYS.ORDImage.init('FILE', 'IMGDIR02', '$picture->name'), 
+                ORDSYS.ORDImageSignature.init()";
+
+        $sql .= "returning comparison_picture_id into :comparison_picture_id";
+
+        echo "$this->log - $sql <br />";
+        $stmt = oci_parse($db, $sql);
+
+        $currentPictureId;
+        OCIBindByName($stmt,":comparison_picture_id",$currentPictureId,32);
+
+        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+
+        /** Load image data **/
+            $this->dbImageUploader = new DbImageUploader();
+            $this->dbImageUploader->uploadImageData($db, $picture->image_path.$picture->image_name, $currentPictureId, 'comparison_pictures');
+        
+        /** Create ImageSignature **/
+        $sql = "DECLARE imageObj ORDSYS.ORDImage;
+                        image_sigObj ORDSYS.ORDImageSignature;
+                BEGIN
+                    SELECT image, image_sig INTO imageObj, image_sigObj
+                    FROM comparison_pictures WHERE comparison_picture_id = $currentPictureId FOR UPDATE;
+                    image_sigObj.generateSignature(imageObj);
+                UPDATE comparison_pictures SET image_sig = image_sigObj 
+                WHERE comparison_picture_id = $currentPictureId;
+                COMMIT; END;";
+
+        echo "$this->log - $sql <br />";
+        $stmt = oci_parse($db, $sql);
+        oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+        
+        oci_commit($db);
+        return $currentPictureId;
+    }
     
     function insertArtistIfDoesNotExists($db, $artist) {
         
