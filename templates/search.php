@@ -10,13 +10,16 @@
                     <div class="col-md-12">
                         <div class="search-input">
                             <div class="row">
+                                <label>Search for all picutre criteria</label>
                                 <div class="input-group">
                                     <span class="input-group-addon">All</span>
-                                    <input name="search_all" type="text" class="form-control" placeholder="Look for something on your mind...">
+                                    <input id="search_all" name="search_all" type="text" class="form-control" placeholder="Look for something on your mind...">
                                 </div>
                                 <br />
                             </div>
+                            <div id="search_detail">
                             <div class="row">
+                                <label>Search for given details</label>
                                 <div class="input-group">
                                     <span class="input-group-addon">Picture Name</span>
                                     <input name="search_picture_name"type="text" class="form-control" placeholder="Search for a picture name...">
@@ -61,7 +64,7 @@
                         </div>
                         <div class="row">
                             <label>Choose Category</label>
-                            <select name="search_category[]" multiple class="form-control">
+                            <select id="category_select" name="search_category[]" multiple class="form-control">
                                 <option>Klassische Malerei</option>
                                 <option>Moderne Kunst</option>
                                 <option>Romantik</option>
@@ -69,6 +72,7 @@
                             </select>
                             <br />
                         </div>
+                      </div>
                         <div class="row">
                             <div class="col-md-offset-5 col-md-2">
                                 <button type="submit" class="btn btn-default btn-lg">
@@ -85,5 +89,42 @@
     </div>
     <div class="col-md-2"></div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('#search_all').on('input', function(e) {
+            if($('#search_all').val().length > 0) {
+
+                $("#search_detail :input").attr("disabled", true);
+                $("#category_select").attr("disabled", true);
+
+            } else {
+
+                $("#search_detail :input").attr("disabled", false);
+                $("#category_select").attr("disabled", false);
+            }
+        });
+
+        $('#search_detail :input').on('input', function(e) {
+
+            var lengthZero = true;
+
+            //check all input fields
+            $('#search_detail :input').each(function () {
+                if ($(this).val().length > 0)
+                    lengthZero = false;
+            });
+
+            if(!lengthZero) {
+                console.log("HERE");
+              $("#search_all").attr("disabled", true);
+            } else {
+
+              if($('#search_detail :input').val().length == 0)
+                  $("#search_all").attr("disabled", false);
+            }
+        });
+    });
+</script>
 </body>
 </html>
