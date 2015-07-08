@@ -12,7 +12,9 @@
     include("classes/model/Picture.php");
     include("classes/model/SearchData.php");
     include("classes/model/DisplayPicture.php");
+    include("classes/model/ComparisonPicture.php");
     include("includes/DbManager.php");
+    include("includes/DbSearcher.php");
 
 
     $request = array_merge($_GET, $_POST, $_FILES);

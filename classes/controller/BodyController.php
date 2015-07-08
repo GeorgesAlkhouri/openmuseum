@@ -16,7 +16,7 @@ class BodyController implements IController {
 
             $this->search($request);
         } elseif (isset($request["action"]) && strcmp($request["action"], "picture_search") == 0) {
-        	
+
         	$this->pictureSearch($request);
         }
     }
@@ -25,11 +25,17 @@ class BodyController implements IController {
     public function display() {
         $view = new View();
         $view->setTemplate($this->body);
-        
+
         return $view->loadTemplate();
     }
 
     public function pictureSearch($request) {
+
+      $colorWeight = $request["color_weight"] / 100;
+      $shapeWeight = $request["shape_weight"] / 100;
+      $textureWeight = $request["texture_weight"] / 100;
+
+      $comparisonPicture = new ComparisonPicture();
 
     	if (is_uploaded_file($request["picture_comparing"]["tmp_name"])) {
 
@@ -38,16 +44,31 @@ class BodyController implements IController {
                 echo "Wrong image type or image size to big.";
                 return;
             }
+
+            $comparisonPicture->weightColor = $colorWeight;
+            $comparisonPicture->weightTexture = $textureWeight;
+            $comparisonPicture->weightShape = $shapeWeight;
+            $comparisonPicture->weightLocation = 0.0;
+            $comparisonPicture->threshold = 30;
+            $comparisonPicture->image_path = $request["picture_comparing"]["tmp_name"];
+            $comparisonPicture->image_name = $request["picture_comparing"]["name"];
+
         }
 
         if (is_uploaded_file($request["texture_comparing"]["tmp_name"])) {
 
-            if ( isset($request["texture_comparing"]) & !$this->validateFile($request["texture_comparing"])) {
+            if (!$this->validateFile($request["texture_comparing"])) {
 
                 echo "Wrong image type or image size to big.";
                 return;
             }
+
+            $comparisonPicture->setTextureSearchValues();
+            $comparisonPicture->image_path = $request["texture_comparing"]["tmp_name"];
+            $comparisonPicture->image_name = $request["texture_comparing"]["name"];
         }
+
+
     }
 
     public function search($request) {
@@ -61,8 +82,16 @@ class BodyController implements IController {
         $description = $this->prepareInput($request["search_picture_decription"]);
         $categories = $this->mapCategories($request["search_category"]);
 
-        //TODO: Finish search data validation --> do search
+        $searchData = new SearchData();
+        $searchData->txtDefault = $searchAll;
+        $searchData->txtPictureName = $pictureName;
+        $searchData->txtArtist = $artist;
+        $searchData->txtOwner = $owner;
+        $searchData->txtDescription = $description;
+        $searchData->keywords = $keywords;
+        $searchData->categories = $categories;
 
+        DbManager::Instance()->search($searchData);
     }
 
     public function upload($request) {
@@ -119,12 +148,12 @@ class BodyController implements IController {
 
     		if (isset($request["museum_isOwner"]))
     			$isMuseumOwner = true;
-    		else 
+    		else
     			$isMuseumOwner = false;
 
     		if (isset($request["museum_isExhibitor"]))
     			$isMuseumExhibitor = true;
-    		else 
+    		else
     			$isMuseumExhibitor = false;
 
 	    	if (!$this->validateText($museumName) ||
@@ -141,7 +170,7 @@ class BodyController implements IController {
         // Check owner if museum is not declared or museum is not owner
     	if (!$isMuseumOwner || strlen($this->prepareInput($request["museum_name"])) <= 0) {
 
-            if (!isset($request["owner_firstname"]) || 
+            if (!isset($request["owner_firstname"]) ||
                 !isset($request["owner_surname"])) {
                 echo "Wrong owner input";
                 return;
@@ -167,7 +196,7 @@ class BodyController implements IController {
 
     		echo "Wrong image type or image size to big.";
     		return;
-    	} 
+    	}
 
         $picture = new Picture();
         $picture->name = $pictureName;
@@ -199,12 +228,12 @@ class BodyController implements IController {
         $owner->firstname = $ownerFirstname;
         $owner->lastname = $ownerSurename;
 
-        // echo " Picture ".$picture . "<br>" ; 
-        // echo " Owner ". $owner . "<br>" ; 
+        // echo " Picture ".$picture . "<br>" ;
+        // echo " Owner ". $owner . "<br>" ;
         // echo "  Museum ". $museum . "<br>" ;
         // echo " Artist " . $artist . "<br>" ;
         // echo " Categories " . print_r($categories);
-        
+
         DbManager::Instance()->insertUserDataInDb($picture, $artist, $museum, $owner, $keywords, $categories);
     }
 
@@ -245,7 +274,7 @@ class BodyController implements IController {
     private function prepareKeywords($data) {
 
 		$keywords = explode(",", $data);
-		
+
 		//removes all empty elements
 		$keywords = array_filter($keywords);
 

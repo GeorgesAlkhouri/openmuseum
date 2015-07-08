@@ -20,17 +20,17 @@
                                         </div>
                                         <div class="row">
                                             <label>Picture Color Weight</label>
-                                            <input class="slider" data-slider-id='data-slider-color' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50">
+                                            <input name="color_weight" class="slider" data-slider-id='data-slider-color' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50">
                                         </div>
                                         <br />
                                         <div class="row">
                                             <label>Picture Shape Weight</label>
-                                            <input class="slider" data-slider-id='data-slider-color' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50">
+                                            <input name="shape_weight" class="slider" data-slider-id='data-slider-color' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50">
                                         </div>
                                         <br />
                                         <div class="row">
                                             <label>Picture Texture Weight</label>
-                                            <input class="slider" data-slider-id='data-slider-color' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50">
+                                            <input name="texture_weight" class="slider" data-slider-id='data-slider-color' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50">
                                         </div>
                                     </div>
                                 </div>
@@ -68,9 +68,9 @@
 </div>
 <script>
     $(function(){
-    
+
                 $('.cp').colorpicker();
-    
+
                 $(".slider").slider();
     });
 </script>
