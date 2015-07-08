@@ -80,7 +80,9 @@ class BodyController implements IController {
         $owner = $this->prepareInput($request["search_picture_owner"]);
         $keywords = $this->prepareKeywords($request["search_picture_keywords"]);
         $description = $this->prepareInput($request["search_picture_decription"]);
-        $categories = $this->mapCategories($request["search_category"]);
+        $categories = NULL;
+        if (isset($request["search_category"]))
+          $this->mapCategories($request["search_category"]);
 
         $searchData = new SearchData();
         $searchData->txtDefault = $searchAll;
