@@ -14,7 +14,7 @@ class DbSearcher
         $keywordOperator = " AND "; // change to OR when result set not satisfied
         $addOperator = false;
 
-        $sqlSelect = "SELECT pictures.picture_id";
+        $sqlSelect = "SELECT DISTINCT pictures.picture_id";
         $sqlFrom = " FROM pictures ";
         $sqlWhere = " WHERE ";
 
@@ -39,13 +39,13 @@ class DbSearcher
 
         /* Search for Museum Information */
         if (!empty($searchData->txtMuseumOwnes)) {
-            $sqlFrom .= " left join museums on pictures.museum_ownes_fk = museums.museum_id ";
+            $sqlFrom .= " LEFT JOIN museums on pictures.museum_ownes_fk = museums.museum_id ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getMuseumOwnesSearchSql($searchData->txtMuseumOwnes);
             $addOperator = true;
         }
         if (!empty($searchData->txtMuseumExhibits)) {
-            $sqlFrom .= " left join museums on pictures.museum_exhibits_fk = museums.museum_id ";
+            $sqlFrom .= " LEFT JOIN museums on pictures.museum_exhibits_fk = museums.museum_id ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getMuseumExhibitsSearchSql($searchData->txtMuseumExhibits);
             $addOperator = true;
@@ -53,14 +53,20 @@ class DbSearcher
 
         /* Search for Owner Information */
         if (!empty($searchData->txtOwner)) {
-            $sqlFrom .= " left join owners on pictures.owner_fk = owners.owner_id ";
+            $sqlFrom .= " LEFT JOIN owners on pictures.owner_fk = owners.owner_id ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getOwnerSearchSql($searchData->txtOwner);
             $addOperator = true;
         }
 
         /* Search for KeyWords Information */
-        
+        if(!empty($searchData->keywords)){
+            $sqlFrom .= " LEFT JOIN pictures_keywords on pictures.picture_id = pictures_keywords.picture_fk  LEFT JOIN keywords
+            on keywords.keyword_id = pictures_keywords.picture_fk ";
+            if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
+            $sqlWhere .= $this->getKeywordSearchSql($searchData->keywords);
+            $addOperator = true;
+        }
 
         /* Search for Categories Information */
 
@@ -265,13 +271,15 @@ class DbSearcher
                     )";
     }
     
-    function getKeywordSearchSql($search) {
+    function getKeywordSearchSql($keywords) {
         
-        return "(
+        $sql = "
             pictures.picture_id = pictures_keywords.picture_fk AND
-            keywords.keyword_id = pictures_keywords.picture_fk AND
-            UPPER(keywords.title) LIKE UPPER('%$search%')
-                    )";
+            keywords.keyword_id = pictures_keywords.picture_fk ";
+        foreach ($keywords as $keyword) {
+           $sql .= " AND UPPER(keywords.title) LIKE UPPER('%$keyword%') ";
+        }
+        return $sql;
     }
     
     function getOwnerSearchSql($search) {
