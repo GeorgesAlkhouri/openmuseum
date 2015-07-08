@@ -10,14 +10,13 @@ class DbSearcher
     
     function searchDetails($db, $searchData) {
         
-        $sql;
         $txtFieldOperator = " AND "; // change to OR when result set not satisfied
         $keywordOperator = " AND "; // change to OR when result set not satisfied
         $addOperator = false;
 
-        $sqlSelect = $this->getPictureSelectSql();
+        $sqlSelect = "SELECT pictures.picture_id";
         $sqlFrom = " FROM pictures ";
-        $sqlWhere = "WHERE ";
+        $sqlWhere = " WHERE ";
 
         /* Search for Picture Information */
         if (!empty($searchData->txtPictureName)) {
@@ -32,7 +31,7 @@ class DbSearcher
 
         /* Search for Artist Information */
         if (!empty($searchData->txtArtist)) {
-            $sqlFrom .= ", artists";
+            $sqlFrom .= " left join artists on pictures.artist_fk = artists.artist_id ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getArtistSearchSql($searchData->txtArtist);
             $addOperator = true;
@@ -40,41 +39,40 @@ class DbSearcher
 
         /* Search for Museum Information */
         if (!empty($searchData->txtMuseumOwnes)) {
+            $sqlFrom .= " left join museums on pictures.museum_ownes_fk = museums.museum_id ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getMuseumOwnesSearchSql($searchData->txtMuseumOwnes);
             $addOperator = true;
         }
         if (!empty($searchData->txtMuseumExhibits)) {
+            $sqlFrom .= " left join museums on pictures.museum_exhibits_fk = museums.museum_id ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getMuseumExhibitsSearchSql($searchData->txtMuseumExhibits);
             $addOperator = true;
         }
-        if (!empty($searchData->txtMuseumExhibits) || !empty($searchData->txtMuseumOwnes)) {
-            $sqlFrom .= ", museums";
-        }
 
         /* Search for Owner Information */
         if (!empty($searchData->txtOwner)) {
+            $sqlFrom .= " left join owners on pictures.owner_fk = owners.owner_id ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
-            $sqlFrom .= ", owners";
-            $sqlWhere .= $txtFieldOperator.$this->getOwnerSearchSql($search);
+            $sqlWhere .= $this->getOwnerSearchSql($searchData->txtOwner);
             $addOperator = true;
         }
 
         /* Search for KeyWords Information */
+        
 
         /* Search for Categories Information */
+
         
         $sql = $sqlSelect.$sqlFrom.$sqlWhere;
+
         $result = $this->executeSql($db, $sql);
-        $pictures = $this->getPicturesArrayFromResult($result);
+        $pictures = $this->getPicturesArrayFromResult($db, $result);
         return $pictures;
     }
 
     function searchAll($db, $searchData){
-
-        echo "TXTDEFAULT: ".$searchData->txtDefault; 
-        $searchData->txtDefault = "sd";
 
         if (!empty($searchData->txtDefault)) {
 
@@ -134,7 +132,6 @@ class DbSearcher
         $pictures = array();
 
         while (oci_fetch($stmt)) {
-            echo "<br \> $this->log: result picture_id: ".oci_result($stmt, 'PICTURE_ID')."<br \>";
 
             $picture_id = oci_result($stmt, 'PICTURE_ID');
             $displayPic = $this->getDiplayPictureForId($db, $picture_id);
