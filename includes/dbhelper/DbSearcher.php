@@ -261,6 +261,7 @@ class DbSearcher
             $museum_owns_fk = oci_result($stmt, 'museum_owns_fk');
             $museum_exhibits_fk = oci_result($stmt, 'museum_exhibits_fk');
             $owner_fk = oci_result($stmt, 'owner_fk');
+            $picture_id = oci_result($stmt, 'picture_id');
 
             $picture = new DisplayPicture();
             $picture->name = oci_result($stmt, 'NAME');
@@ -275,9 +276,17 @@ class DbSearcher
             $picture->museum_exhibits_enddate = oci_result($stmt, 'museum_exhibits_enddate');
             $picture->artist_safety_level = oci_result($stmt, 'artist_safety_level');
             $picture->owner = $this->getOwnerForId($owner_fk);
+            $picture->image_data = $this->loadImageData($db, $picture_id, "pictures", "image");
             array_push($pictures, $picture);
         }
         return $pictures;
+    }
+
+    function loadImageData($db, $id, $table, $column){
+
+        $imageRetriever = new DbImageRetriever();
+        $data = $imageRetriever->retrieveImage($db, $id, $table, $column);
+        return $data;
     }
 
     function getArtistForId($artist_id){

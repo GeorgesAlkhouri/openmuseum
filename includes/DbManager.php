@@ -4,6 +4,8 @@ include_once 'dbhelper/DbIdFetcher.php';
 include_once 'dbhelper/DbInserter.php';
 include_once 'dbhelper/DbTableCreator.php';
 include_once 'dbhelper/DbSearcher.php';
+include_once 'dbhelper/DbImageRetriever.php';
+include_once 'dbhelper/DbImageUploader.php';
 include_once 'Auth.php';
 
 final class DbManager

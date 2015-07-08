@@ -16,8 +16,7 @@ class DisplayPicture{
     public $museum_exhibits_enddate;
     public $owner; // Owner object
 
-    public $image_path;
-    public $image_name;
+    public $image_data; // blob data
 }
 
 ?>
