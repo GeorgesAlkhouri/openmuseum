@@ -83,10 +83,16 @@ final class DbManager
     searchData is an instance of SearchData class
     return an array of DiplayPicture objects
     */
-    function search($searchData){
+    function searchDetails($searchData){
 
         $dbSearcher = new DbSearcher();
-        $dbSearcher->search($this->db, $searchData);
+        $dbSearcher->searchDetails($this->db, $searchData);
+    }
+
+    function searchAll($searchData){
+
+        $dbSearcher = new DbSearcher();
+        $dbSearcher->searchAll($this->db, $searchData);
     }
 
     /*

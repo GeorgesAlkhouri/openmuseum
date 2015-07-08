@@ -8,16 +8,15 @@ class DbSearcher
         $this->log = 'DbSearcher';
     }
     
-    function search($db, $searchData) {
+    function searchDetails($db, $searchData) {
         
         $sql;
         $txtFieldOperator = " AND "; // change to OR when result set not satisfied
-        $allOperator = " OR "; // when user wants to search in all fields
         $keywordOperator = " AND "; // change to OR when result set not satisfied
         $addOperator = false;
 
         $sqlSelect = $this->getPictureSelectSql();
-        $sqlFrom = "FROM pictures";
+        $sqlFrom = " FROM pictures ";
         $sqlWhere = "WHERE ";
 
         /* Search for Picture Information */
@@ -65,9 +64,24 @@ class DbSearcher
         /* Search for KeyWords Information */
 
         /* Search for Categories Information */
-
         
-        /* Search for All Information */
+        $sql = $sqlSelect.$sqlFrom.$sqlWhere;
+        $result = $this->executeSql($db, $sql);
+        $pictures = $this->getPicturesArrayFromResult($result);
+        return $pictures;
+    }
+
+    function searchAll($db, $searchData){
+
+        $sql;
+        $allOperator = " OR "; // when user wants to search in all fields
+        $keywordOperator = " AND "; // change to OR when result set not satisfied
+        $addOperator = false;
+
+        $sqlSelect = $this->getPictureSelectSql();
+        $sqlFrom = " FROM pictures ";
+        $sqlWhere = "WHERE ";
+
         if (!empty($searchData->txtDefault)) {
             $search = $searchData->txtDefault;
 
@@ -97,8 +111,9 @@ class DbSearcher
             }
         }
         
-        $result = this->executeSql($db, $sql);
-        $pictures = this->getPicturesArrayFromResult($result);
+        $sql = $sqlSelect.$sqlFrom.$sqlWhere;
+        $result = $this->executeSql($db, $sql);
+        $pictures = $this->getPicturesArrayFromResult($result);
         return $pictures;
     }
 
@@ -117,8 +132,8 @@ class DbSearcher
                     texture=\"$picture->weightColor\",
                     $picture->threshold, 123) = 1 ORDER BY SCORE ASC;'";
 
-        $result = this->executeSql($db, $sql);
-        $pictures = this->getPicturesArrayFromResult($result);
+        $result = $this->executeSql($db, $sql);
+        $pictures = $this->getPicturesArrayFromResult($result);
         return $pictures;
     }
 
@@ -268,7 +283,7 @@ class DbSearcher
     function getArtistForId($artist_id){
 
         $sql = "SELECT firstname, lastname, birth_date, death_date FROM artists WHERE artist_id = '$artist_id'";
-        $result = this->executeSql($db, $sql);
+        $result = $this->executeSql($db, $sql);
 
         $artist = new Artist();
 
@@ -284,7 +299,7 @@ class DbSearcher
     function getMuseumForId($museum_id){
 
         $sql = "SELECT name, adress, website FROM museums WHERE museum_id = '$museum_id'";
-        $result = this->executeSql($db, $sql);
+        $result = $this->executeSql($db, $sql);
 
         $museum = new Museum();
 
@@ -299,7 +314,7 @@ class DbSearcher
     function getOwnerForId($owner_id){
 
         $sql = "SELECT firstname, lastname FROM owners WHERE owner_id = '$owner_id'";
-        $result = this->executeSql($db, $sql);
+        $result = $this->executeSql($db, $sql);
 
         $owner = new Owner();
 
