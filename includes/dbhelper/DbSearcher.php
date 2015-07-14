@@ -1,15 +1,15 @@
 <?php
 class DbSearcher
 {
-    
+
     private $log;
-    
+
     function DbSearcher() {
         $this->log = 'DbSearcher';
     }
-    
+
     function searchDetails($db, $searchData) {
-        
+
         $txtFieldOperator = " AND "; // change to OR when result set not satisfied
         $keywordOperator = " AND "; // change to OR when result set not satisfied
         $addOperator = false;
@@ -77,7 +77,7 @@ class DbSearcher
             $sqlWhere .= $this->getCategoriesSearchSql($searchData->categories);
             $addOperator = true;
         }
-        
+
         $sql = $sqlSelect.$sqlFrom.$sqlWhere;
 
         $result = $this->executeSql($db, $sql);
@@ -105,13 +105,15 @@ class DbSearcher
             $sql .= $allOperator;
             $sql .= $this->getMuseumExhibitsSearchSql($search);
             $sql .= " UNION SELECT pictures.picture_id FROM pictures, owners "." WHERE ";
-            $sql .= $this->getOwnerSearchSql($search);  
+            $sql .= $this->getOwnerSearchSql($search);
 
             $result = $this->executeSql($db, $sql);
             $pictures = $this->getPicturesArrayFromResult($db, $result);
             return $pictures;
         }else{
             echo "$this->log - search word is empty";
+
+            return NULL;
         }
     }
 
@@ -123,11 +125,11 @@ class DbSearcher
 
         $sql = "SELECT P.picture_id, ORDSYS.IMGScore(123) SCORE
                 FROM pictures P, comparison_pictures C
-                WHERE C.comparison_picture_id=$id 
+                WHERE C.comparison_picture_id=$id
                 AND ORDSYS.IMGSimilar(P.image_sig, C.image_sig,
-                    'color=\"$picture->weightColor\" 
-                    location=\"$picture->weightColor\" 
-                    shape=\"$picture->weightColor\" 
+                    'color=\"$picture->weightColor\"
+                    location=\"$picture->weightColor\"
+                    shape=\"$picture->weightColor\"
                     texture=\"$picture->weightColor\"',
                     $picture->threshold, 123) = 1 ORDER BY SCORE ASC";
 
@@ -155,10 +157,10 @@ class DbSearcher
 
     function getDiplayPictureForId($db, $id){
 
-        $sql = "SELECT name, description, creation_date, upload_date, 
-                artist_fk, artist_safety_level, 
-                museum_ownes_fk, museum_exhibits_fk, 
-                museum_exhibits_startdate, museum_exhibits_enddate, 
+        $sql = "SELECT name, description, creation_date, upload_date,
+                artist_fk, artist_safety_level,
+                museum_ownes_fk, museum_exhibits_fk,
+                museum_exhibits_startdate, museum_exhibits_enddate,
                 owner_fk
                 FROM pictures WHERE picture_id = $id";
         $imgResult = $this->executeSql($db, $sql);
@@ -216,9 +218,9 @@ class DbSearcher
         if (!empty($museum_id)){
             $sql = "SELECT name, adress, website FROM museums WHERE museum_id = '$museum_id'";
             $result = $this->executeSql($db, $sql);
-    
+
             $museum = new Museum();
-    
+
             while (oci_fetch($result)) {
                 $museum->name = oci_result($result, 'NAME');
                 $museum->adress = oci_result($result, 'ADRESS');
@@ -241,21 +243,21 @@ class DbSearcher
                 $owner->lastname = oci_result($result, 'LASTNAME');
             }
             return $owner;
-        }  
+        }
     }
 
         function getPictureNameSearchSql($search) {
-        
+
         return "UPPER(pictures.name) LIKE UPPER('%$search%') ";
     }
 
     function getPictureDescriptionSearchSql($search) {
-        
+
         return "CONTAINS(pictures.description, '$search') > 0 ";
     }
 
     function getArtistSearchSql($search) {
-        
+
         return "(
             pictures.artist_fk = artists.artist_id AND
             concat(concat(UPPER(artists.firstname), ' '), UPPER(artists.lastname)) LIKE UPPER('%$search%')
@@ -263,7 +265,7 @@ class DbSearcher
     }
 
     function getMuseumOwnesSearchSql($search) {
-        
+
         return "(
             pictures.museum_ownes_fk = museums.museum_id AND
             UPPER(museums.name) LIKE UPPER('%$search%')
@@ -271,15 +273,15 @@ class DbSearcher
     }
 
     function getMuseumExhibitsSearchSql($search) {
-        
+
         return "(
             pictures.museum_exhibits_fk = museums.museum_id AND
             UPPER(museums.name) LIKE UPPER('%$search%')
                     )";
     }
-    
+
     function getKeywordSearchSql($keywords) {
-        
+
         $sql = "
             pictures.picture_id = pictures_keywords.picture_fk AND
             keywords.keyword_id = pictures_keywords.picture_fk ";
@@ -288,9 +290,9 @@ class DbSearcher
         }
         return $sql;
     }
-    
+
     function getOwnerSearchSql($search) {
-        
+
         return "(
             pictures.owner_fk = owners.owner_id AND
             concat(concat(UPPER(owners.firstname), ' '), UPPER(owners.lastname)) LIKE UPPER('%$search%')
@@ -298,7 +300,7 @@ class DbSearcher
     }
 
     function getCategoriesSearchSql($categories) {
-        
+
         $sql = "
             pictures.picture_id = pictures_cateogies.picture_fk AND
             categories.category_id = pictures_cateogies.picture_fk ";
@@ -310,7 +312,7 @@ class DbSearcher
 
 
     function executeSql($db, $sql) {
-        
+
         echo "<br \> $this->log - $sql <br />";
         $stmt = oci_parse($db, $sql);
         oci_execute($stmt);

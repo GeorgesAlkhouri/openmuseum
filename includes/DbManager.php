@@ -58,7 +58,7 @@ final class DbManager
             $dbInserter->insertMuseumOwnsIfNotExists($this->db, $museum);
             $picture->museum_owns_fk = $idFetcher->fetchMuseumId($this->db, $museum);
         }
-        
+
         /********** KEYWORDS ****************/
         $keyword_ids = array();
         foreach ($keywords as $keyword_title) {
@@ -66,35 +66,35 @@ final class DbManager
             $keyword_id = $idFetcher->fetchKeywordId($this->db, $keyword_title);
             array_push($keyword_ids, $keyword_id);
         }
-        
+
         /********** CATEGORIES ****************/
         $dbInserter->insertCategoriesIfNeeded($this->db);
-        
+
         /********** PICTURE ****************/
         $dbInserter->insertPictureIfNotExists($this->db, $picture);
         $picture->id = $idFetcher->fetchPictureId($this->db, $picture);
-        
+
         /********** PICTURES_CATEGORIES ****************/
         $dbInserter->insertPictureCategoriesIfNotExists($this->db, $picture->id, $category_ids);
-        
+
         /********** PICTURES_KEYWORDS ****************/
         $dbInserter->insertPictureKeywordsIfNotExists($this->db, $picture->id, $keyword_ids);
     }
 
-    /* 
+    /*
     searchData is an instance of SearchData class
     return an array of DiplayPicture objects
     */
     function searchDetails($searchData){
 
         $dbSearcher = new DbSearcher();
-        $dbSearcher->searchDetails($this->db, $searchData);
+        return $dbSearcher->searchDetails($this->db, $searchData);
     }
 
     function searchAll($searchData){
 
         $dbSearcher = new DbSearcher();
-        $dbSearcher->searchAll($this->db, $searchData);
+        return $dbSearcher->searchAll($this->db, $searchData);
     }
 
     /*
