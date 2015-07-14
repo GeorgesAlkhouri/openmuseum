@@ -80,7 +80,7 @@
                                 </button>
                             </div>
                         </div>
-                        <input type="hidden" name="view" value="search" />
+                        <!-- <input type="hidden" name="view" value="results" /> -->
                         <input type="hidden" name="action" value="search" />
                     </div>
             </div>

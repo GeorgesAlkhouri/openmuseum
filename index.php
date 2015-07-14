@@ -15,9 +15,10 @@
     include("classes/model/ComparisonPicture.php");
     include("includes/DbManager.php");
 
+    session_start();
 
     $request = array_merge($_GET, $_POST, $_FILES);
-    
+
     $headerController = new HeaderController($request);
     $navigationController = new NavigationController($request);
     $bodyController = new BodyController($request);

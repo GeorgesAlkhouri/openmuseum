@@ -3,10 +3,19 @@
 class BodyController implements IController {
 
     private $body = "";
+    private $view;
 
 
     public function __construct($request){
+
+        $this->view = new View();
         $this->body = !empty($request["view"]) ? $request["view"] : "search";
+
+        // check for view assignment
+        if ($this->body === results) {
+
+            $this->view->assign("results", $_SESSION['RESULTS']);
+        }
 
         // check for upload request
         if (isset($request["action"]) && strcmp($request["action"], "upload") == 0) {
@@ -15,7 +24,7 @@ class BodyController implements IController {
         } else if (isset($request["action"]) && strcmp($request["action"], "search") == 0) {
 
             $this->search($request);
-        } elseif (isset($request["action"]) && strcmp($request["action"], "picture_search") == 0) {
+        } else if (isset($request["action"]) && strcmp($request["action"], "picture_search") == 0) {
 
         	$this->pictureSearch($request);
         }
@@ -23,10 +32,10 @@ class BodyController implements IController {
 
 
     public function display() {
-        $view = new View();
-        $view->setTemplate($this->body);
 
-        return $view->loadTemplate();
+        $this->view->setTemplate($this->body);
+
+        return $this->view->loadTemplate();
     }
 
     public function pictureSearch($request) {
@@ -103,11 +112,15 @@ class BodyController implements IController {
 
         $searchData = new SearchData();
 
+        //Type: DisplayPicture
+        $result;
+
         if (strlen($this->prepareInput($request["search_all"])) > 0) {
 
             $searchAll = $this->prepareInput($request["search_all"]);
+            $searchData->txtDefault = $searchAll;
 
-            DbManager::Instance()->searchAll($searchData);
+            $result = DbManager::Instance()->searchAll($searchData);
         } else {
 
             $pictureName = $this->prepareInput($request["search_picture_name"]);
@@ -120,8 +133,6 @@ class BodyController implements IController {
             if (isset($request["search_category"]))
               $this->mapCategories($request["search_category"]);
 
-
-            $searchData->txtDefault = $searchAll;
             $searchData->txtPictureName = $pictureName;
             $searchData->txtArtist = $artist;
             $searchData->txtOwner = $owner;
@@ -129,8 +140,16 @@ class BodyController implements IController {
             $searchData->keywords = $keywords;
             $searchData->categories = $categories;
 
-            DbManager::Instance()->searchDetails($searchData);
+            $result = DbManager::Instance()->searchDetails($searchData);
         }
+
+
+        $_SESSION['RESULTS'] = $result;
+
+        $host  = $_SERVER['HTTP_HOST'];
+        $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+        $extra = 'index.php?view=results';
+        header("Location: http://$host$uri/$extra");
     }
 
     public function upload($request) {
