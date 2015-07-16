@@ -128,9 +128,9 @@ class DbSearcher
                 WHERE C.comparison_picture_id=$id
                 AND ORDSYS.IMGSimilar(P.image_sig, C.image_sig,
                     'color=\"$picture->weightColor\"
-                    location=\"$picture->weightColor\"
-                    shape=\"$picture->weightColor\"
-                    texture=\"$picture->weightColor\"',
+                    location=\"$picture->weightLocation\"
+                    shape=\"$picture->weightShape\"
+                    texture=\"$picture->weightTexture\"',
                     $picture->threshold, 123) = 1 ORDER BY SCORE ASC";
 
         $result = $this->executeSql($db, $sql);

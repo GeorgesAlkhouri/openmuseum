@@ -44,7 +44,8 @@ class BodyController implements IController {
       $shapeWeight = $request["shape_weight"] / 100;
       $textureWeight = $request["texture_weight"] / 100;
 
-      $comparisonPicture = new ComparisonPicture();
+      //Type: DisplayPicture
+      $result;
 
     	if (is_uploaded_file($request["picture_comparing"]["tmp_name"])) {
 
@@ -54,6 +55,8 @@ class BodyController implements IController {
                 return;
             }
 
+            $comparisonPicture = new ComparisonPicture();
+
             $comparisonPicture->weightColor = $colorWeight;
             $comparisonPicture->weightTexture = $textureWeight;
             $comparisonPicture->weightShape = $shapeWeight;
@@ -62,7 +65,7 @@ class BodyController implements IController {
             $comparisonPicture->image_path = $request["picture_comparing"]["tmp_name"];
             $comparisonPicture->image_name = $request["picture_comparing"]["name"];
 
-            DbManager::Instance()->compare($comparisonPicture);
+            $result = DbManager::Instance()->compare($comparisonPicture);
         }
         else if (is_uploaded_file($request["texture_comparing"]["tmp_name"])) {
 
@@ -72,13 +75,17 @@ class BodyController implements IController {
                 return;
             }
 
+            $comparisonPicture = new ComparisonPicture();
+
             $comparisonPicture->setTextureSearchValues();
             $comparisonPicture->image_path = $request["texture_comparing"]["tmp_name"];
             $comparisonPicture->image_name = $request["texture_comparing"]["name"];
 
-            DbManager::Instance()->compare($comparisonPicture);
+            $result = DbManager::Instance()->compare($comparisonPicture);
         }
         else if ( strlen($request["picture_color"]) > 0 ){
+
+          $comparisonPicture = new ComparisonPicture();
 
             //Color compare
             $comparisonPicture->setColorSearchValues();
@@ -102,9 +109,16 @@ class BodyController implements IController {
             $comparisonPicture->image_path = $path;
             $comparisonPicture->image_name = $name;
 
-            DbManager::Instance()->compare($comparisonPicture);
+            $result = DbManager::Instance()->compare($comparisonPicture);
         }
 
+
+        $_SESSION['RESULTS'] = $result;
+
+        $host  = $_SERVER['HTTP_HOST'];
+        $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+        $extra = 'index.php?view=results';
+        header("Location: http://$host$uri/$extra");
 
     }
 

@@ -104,7 +104,7 @@ final class DbManager
     function compare($comparePicture){
 
         $dbSearcher = new DbSearcher();
-        $dbSearcher->compare($this->db, $comparePicture);
+        return $dbSearcher->compare($this->db, $comparePicture);
     }
 }
 ?>
