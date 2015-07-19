@@ -66,26 +66,12 @@ class BodyController implements IController {
             $comparisonPicture->image_name = $request["picture_comparing"]["name"];
 
             $result = DbManager::Instance()->compare($comparisonPicture);
-        }
-        else if (is_uploaded_file($request["texture_comparing"]["tmp_name"])) {
+            $_SESSION['RESULTS'] = $result;
 
-            if (!$this->validateFile($request["texture_comparing"])) {
-
-                echo "Wrong image type or image size to big.";
-                return;
-            }
+            $this->reroute('index.php?view=results');
+        } else if ( strlen($request["picture_color"]) > 0 ){
 
             $comparisonPicture = new ComparisonPicture();
-
-            $comparisonPicture->setTextureSearchValues();
-            $comparisonPicture->image_path = $request["texture_comparing"]["tmp_name"];
-            $comparisonPicture->image_name = $request["texture_comparing"]["name"];
-
-            $result = DbManager::Instance()->compare($comparisonPicture);
-        }
-        else if ( strlen($request["picture_color"]) > 0 ){
-
-          $comparisonPicture = new ComparisonPicture();
 
             //Color compare
             $comparisonPicture->setColorSearchValues();
@@ -110,16 +96,10 @@ class BodyController implements IController {
             $comparisonPicture->image_name = $name;
 
             $result = DbManager::Instance()->compare($comparisonPicture);
+            $_SESSION['RESULTS'] = $result;
+
+            $this->reroute('index.php?view=results');
         }
-
-
-        $_SESSION['RESULTS'] = $result;
-
-        $host  = $_SERVER['HTTP_HOST'];
-        $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-        $extra = 'index.php?view=results';
-        header("Location: http://$host$uri/$extra");
-
     }
 
     public function search($request) {

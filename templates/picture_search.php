@@ -10,7 +10,7 @@
                 <div class="col-md-12">
                     <div class="search-input">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-12">
                                         <div class="row">
@@ -35,19 +35,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label>Color Comparing</label>
                                 <div class="input-group cp">
                                     <input name ="picture_color" type="text" class="form-control" />
                                     <span class="input-group-addon"><i></i></span>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Texture Comparing</label>
-                                    <input type="file" name="texture_comparing">
-                                </div>
-                                <br />
                             </div>
                         </div>
                         <div class="row">
