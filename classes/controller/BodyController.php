@@ -12,7 +12,7 @@ class BodyController implements IController {
         $this->body = !empty($request["view"]) ? $request["view"] : "search";
 
         // check for view assignment
-        if ($this->body === results) {
+        if ($this->body === "results") {
 
             $this->view->assign("results", $_SESSION['RESULTS']);
         }
