@@ -62,7 +62,7 @@ class DbSearcher
         /* Search for KeyWords Information */
         if(!empty($searchData->keywords)){
             $sqlFrom .= " LEFT JOIN pictures_keywords on pictures.picture_id = pictures_keywords.picture_fk  LEFT JOIN keywords
-            on keywords.keyword_id = pictures_keywords.picture_fk ";
+            on keywords.keyword_id = pictures_keywords.keyword_fk ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getKeywordSearchSql($searchData->keywords);
             $addOperator = true;
@@ -70,7 +70,7 @@ class DbSearcher
 
         /* Search for Categories Information */
 
-        if(!empty($searchData->keywords)){
+        if(!empty($searchData->categories)){
             $sqlFrom .= " LEFT JOIN pictures_categories on pictures.picture_id = pictures_categories.picture_fk  LEFT JOIN categories
             on categories.category_id = pictures_categories.picture_fk ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
@@ -94,7 +94,12 @@ class DbSearcher
             $keywordOperator = " AND "; // change to OR when result set not satisfied
             $addOperator = false;
 
-            $sql = "SELECT pictures.picture_id FROM pictures, artists WHERE ";
+            $sql = "SELECT pictures.picture_id 
+                    FROM pictures 
+                    LEFT JOIN artists on pictures.artist_fk = artists.artist_id
+                    LEFT JOIN museums on pictures.museum_ownes_fk = museums.museum_id or pictures.museum_exhibits_fk = museums.museum_id
+                    LEFT JOIN owners on pictures.owner_fk = owners.owner_id
+                    WHERE ";
             $sql .= $this->getPictureNameSearchSql($search);
             $sql .= $allOperator;
             $sql .= $this->getPictureDescriptionSearchSql($search);
@@ -246,7 +251,7 @@ class DbSearcher
         }
     }
 
-        function getPictureNameSearchSql($search) {
+    function getPictureNameSearchSql($search) {
 
         return "UPPER(pictures.name) LIKE UPPER('%$search%') ";
     }
@@ -258,55 +263,39 @@ class DbSearcher
 
     function getArtistSearchSql($search) {
 
-        return "(
-            pictures.artist_fk = artists.artist_id AND
-            concat(concat(UPPER(artists.firstname), ' '), UPPER(artists.lastname)) LIKE UPPER('%$search%')
-                    )";
+        return "concat(concat(UPPER(artists.firstname), ' '), UPPER(artists.lastname)) LIKE UPPER('%$search%')";
     }
 
     function getMuseumOwnesSearchSql($search) {
 
-        return "(
-            pictures.museum_ownes_fk = museums.museum_id AND
-            UPPER(museums.name) LIKE UPPER('%$search%')
-                    )";
+        return "UPPER(museums.name) LIKE UPPER('%$search%')";
     }
 
     function getMuseumExhibitsSearchSql($search) {
 
-        return "(
-            pictures.museum_exhibits_fk = museums.museum_id AND
-            UPPER(museums.name) LIKE UPPER('%$search%')
-                    )";
+        return "UPPER(museums.name) LIKE UPPER('%$search%')";
     }
 
     function getKeywordSearchSql($keywords) {
-
-        $sql = "
-            pictures.picture_id = pictures_keywords.picture_fk AND
-            keywords.keyword_id = pictures_keywords.picture_fk ";
+        $sql = "";
         foreach ($keywords as $keyword) {
-           $sql .= " AND UPPER(keywords.title) LIKE UPPER('%$keyword%') ";
+           $sql .= "UPPER(keywords.title) LIKE UPPER('%$keyword%') AND ";
         }
+        $sql = substr($sql, 0, strlen($sql)-4);
         return $sql;
     }
 
     function getOwnerSearchSql($search) {
 
-        return "(
-            pictures.owner_fk = owners.owner_id AND
-            concat(concat(UPPER(owners.firstname), ' '), UPPER(owners.lastname)) LIKE UPPER('%$search%')
-            )";
+        return "concat(concat(UPPER(owners.firstname), ' '), UPPER(owners.lastname)) LIKE UPPER('%$search%')";
     }
 
     function getCategoriesSearchSql($categories) {
-
-        $sql = "
-            pictures.picture_id = pictures_cateogies.picture_fk AND
-            categories.category_id = pictures_cateogies.picture_fk ";
+        $sql = "";
         foreach ($categories as $category) {
-           $sql .= " AND UPPER(category.category_id) LIKE UPPER('%$category%') ";
+           $sql .= "UPPER(category.category_id) LIKE UPPER('%$category%') AND ";
         }
+        $sql = substr($sql, 0, strlen($sql)-4);
         return $sql;
     }
 
