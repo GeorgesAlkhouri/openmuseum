@@ -15,7 +15,7 @@
                       <th>Artist</th>
                       <th>Owner</th>
                       <th>Museum Exhibition Date</th>
-                      <th>Image</th>
+                      <th>Image<small> (Click for details)</small></th>
                       <th>Description</th>
                     </tr>
                   </thead>
@@ -33,13 +33,19 @@
                         $finfo = finfo_open();
                         $mime_type = finfo_buffer($finfo, $picture->image_data, FILEINFO_MIME_TYPE);
 
+                        $host  = $_SERVER['HTTP_HOST'];
+                        $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                        $extra = "index.php?view=picture"."&name=$picture->name"."&mime_type=".$mime_type;
+
+                        $_SESSION["BASE64"] = $base64;
+
                         echo "<tr>
                                 <th>$picture->name</th>
                                 <th>$picture->creation_date</th>
                                 <th>$artist->firstname $artist->lastname</th>
                                 <th>$owner->firstname $owner->lastname</th>
                                 <th>From: $picture->museum_exhibits_startdate Unti:$picture->museum_exhibits_enddate</th>
-                                <th><img width='45' height='45' src='data:$mime_type;base64,$base64' class='img-responsive' alt='Responsive image'></th>
+                                <th><a href='http://$host$uri/$extra'><img width='45' height='45' src='data:$mime_type;base64,$base64' class='img-responsive' alt='Responsive image'></a></th>
                                 <th>$picture->description</th>
                               </tr>";
 
