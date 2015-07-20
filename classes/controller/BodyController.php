@@ -18,11 +18,11 @@ class BodyController implements IController {
             unset($_SESSION['RESULTS']);
         } elseif ($this->body === "picture") {
 
-          $this->view->assign("base64", $_SESSION["BASE64"]);
+          $this->view->assign("picture_data", $_SESSION["PICTURE_DATA"]);
           $this->view->assign("name", $request["name"]);
           $this->view->assign("mime_type", $request["mime_type"]);
 
-          unset($_SESSION["BASE64"]);
+          unset($_SESSION["PICTURE_DATA"]);
         }
 
         // check for upload request

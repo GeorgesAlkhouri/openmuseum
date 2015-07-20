@@ -37,7 +37,7 @@
                         $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
                         $extra = "index.php?view=picture"."&name=$picture->name"."&mime_type=".$mime_type;
 
-                        $_SESSION["BASE64"] = $base64;
+                        $_SESSION["PICTURE_DATA"] = $picture->image_data;
 
                         echo "<tr>
                                 <th>$picture->name</th>

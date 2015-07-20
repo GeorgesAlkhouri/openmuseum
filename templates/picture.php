@@ -10,7 +10,7 @@
               <?php
 
                 $mime_type = $this->_["mime_type"];
-                $base64 = $this->_["base64"];
+                $base64 = base64_encode($this->_["picture_data"]);
 
                 echo "<img src='data:$mime_type;base64,$base64' class='img-responsive center-block' alt='Responsive image'>"
 
