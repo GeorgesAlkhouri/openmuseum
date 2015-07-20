@@ -116,7 +116,6 @@
             });
 
             if(!lengthZero) {
-                console.log("HERE");
               $("#search_all").attr("disabled", true);
             } else {
 
