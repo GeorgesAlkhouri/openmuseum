@@ -69,7 +69,7 @@ class BodyController implements IController {
             $_SESSION['RESULTS'] = $result;
 
             $this->reroute('index.php?view=results');
-        } else if ( strlen($request["picture_color"]) > 0 ){
+        } else if ( isset($request["picture_color"]) && strlen($request["picture_color"]) > 0 ){
 
             $comparisonPicture = new ComparisonPicture();
 
@@ -289,6 +289,20 @@ class BodyController implements IController {
         DbManager::Instance()->insertUserDataInDb($picture, $artist, $museum, $owner, $keywords, $categories);
     }
 
+    private function reroute($path) {
+
+      $host  = $_SERVER['HTTP_HOST'];
+      $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+      $extra = $path;
+
+      if (headers_sent()) {
+        die("<br/><br/><b>Redirect failed. Please click on this link:</b> <a href=\"http://$host$uri/$extra\"> Redirect</a>");
+      }
+      else{
+        exit(header("Location: http://$host$uri/$extra"));
+      }
+    }
+
     private function mapCategories($categories) {
 
         if (count($categories) == 0)
@@ -312,9 +326,9 @@ class BodyController implements IController {
   		$data = stripslashes($data);
   		$data = htmlspecialchars($data);
   		return $data;
-	}
+	   }
 
-	private function prepareInputDate($date) {
+    private function prepareInputDate($date) {
 
 		$date = $this->prepareInput($date);
 
