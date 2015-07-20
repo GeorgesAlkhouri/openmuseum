@@ -15,6 +15,7 @@ class BodyController implements IController {
         if ($this->body === "results") {
 
             $this->view->assign("results", $_SESSION['RESULTS']);
+            unset($_SESSION['RESULTS']);
         }
 
         // check for upload request
@@ -115,6 +116,9 @@ class BodyController implements IController {
             $searchData->txtDefault = $searchAll;
 
             $result = DbManager::Instance()->searchAll($searchData);
+            $_SESSION['RESULTS'] = $result;
+
+            $this->reroute('index.php?view=results');
         } else {
 
             $pictureName = $this->prepareInput($request["search_picture_name"]);
@@ -135,17 +139,12 @@ class BodyController implements IController {
             $searchData->categories = $categories;
 
             $result = DbManager::Instance()->searchDetails($searchData);
+            $_SESSION['RESULTS'] = $result;
+
+            $this->reroute('index.php?view=results');
         }
-
-
-        $_SESSION['RESULTS'] = $result;
-
-        $host  = $_SERVER['HTTP_HOST'];
-        $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-        $extra = 'index.php?view=results';
-        header("Location: http://$host$uri/$extra");
     }
-
+    
     public function upload($request) {
 
     	$pictureName = $this->prepareInput($request["picture_name"]);
