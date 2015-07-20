@@ -48,7 +48,7 @@ class BodyController implements IController {
       //Type: DisplayPicture
       $result;
 
-    	if (is_uploaded_file($request["picture_comparing"]["tmp_name"])) {
+    	if (isset($request["picture_comparing"]) && is_uploaded_file($request["picture_comparing"]["tmp_name"])) {
 
             if (!$this->validateFile($request["picture_comparing"])) {
 
@@ -76,6 +76,7 @@ class BodyController implements IController {
 
             //Color compare
             $comparisonPicture->setColorSearchValues();
+            $comparisonPicture->threshold = 30;
 
             $image = imagecreatetruecolor(200, 200);
             // sets background to color
@@ -88,12 +89,9 @@ class BodyController implements IController {
             $name = "color_pic.png";
             $path = sys_get_temp_dir();
 
-            ob_clean();
-            header('Content-type: image/png');
             imagepng($image, $path . "/" . $name);
-            imagedestroy($image);
 
-            $comparisonPicture->image_path = $path;
+            $comparisonPicture->image_path = $path . $name;
             $comparisonPicture->image_name = $name;
 
             $result = DbManager::Instance()->compare($comparisonPicture);
@@ -144,7 +142,7 @@ class BodyController implements IController {
             $this->reroute('index.php?view=results');
         }
     }
-    
+
     public function upload($request) {
 
     	$pictureName = $this->prepareInput($request["picture_name"]);
