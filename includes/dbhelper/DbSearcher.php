@@ -69,7 +69,6 @@ class DbSearcher
         }
 
         /* Search for Categories Information */
-
         if(!empty($searchData->categories)){
             $sqlFrom .= " LEFT JOIN pictures_categories on pictures.picture_id = pictures_categories.picture_fk  LEFT JOIN categories
             on categories.category_id = pictures_categories.picture_fk ";
@@ -280,7 +279,7 @@ class DbSearcher
     function getKeywordSearchSql($keywords) {
         $sql = "";
         foreach ($keywords as $keyword) {
-           $sql .= "UPPER(keywords.title) LIKE UPPER('%$keyword%') AND ";
+           $sql .= "UPPER(keywords.title) LIKE UPPER('%$keyword%') OR ";
         }
         $sql = substr($sql, 0, strlen($sql)-4);
         return $sql;
