@@ -134,7 +134,7 @@ class BodyController implements IController {
             $description = $this->prepareInput($request["search_picture_decription"]);
             $categories = NULL;
             if (isset($request["search_category"]))
-              $this->mapCategories($request["search_category"]);
+              $categories = $this->mapCategories($request["search_category"]);
 
             $searchData->txtPictureName = $pictureName;
             $searchData->txtArtist = $artist;

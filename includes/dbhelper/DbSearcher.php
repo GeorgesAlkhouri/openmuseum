@@ -90,8 +90,8 @@ class DbSearcher
 
             $search = $searchData->txtDefault;
 
-            $sql = "SELECT DISTINCT pictures.picture_id 
-                    FROM pictures 
+            $sql = "SELECT DISTINCT pictures.picture_id
+                    FROM pictures
                     LEFT JOIN artists on pictures.artist_fk = artists.artist_id
                     LEFT JOIN museums on pictures.museum_ownes_fk = museums.museum_id or pictures.museum_exhibits_fk = museums.museum_id
                     LEFT JOIN owners on pictures.owner_fk = owners.owner_id
@@ -292,8 +292,8 @@ class DbSearcher
 
     function getCategoriesSearchSql($categories) {
         $sql = "";
-        foreach ($categories as $category) {
-           $sql .= "UPPER(category.category_id) LIKE UPPER('%$category%') AND ";
+        foreach ($categories as $category_id => $value) {
+           $sql .= "UPPER(categories.category_id) LIKE UPPER('%$value->id%') OR ";
         }
         $sql = substr($sql, 0, strlen($sql)-4);
         return $sql;
