@@ -90,27 +90,28 @@ class DbSearcher
         if (!empty($searchData->txtDefault)) {
 
             $search = $searchData->txtDefault;
-            $allOperator = " OR "; // when user wants to search in all fields
-            $keywordOperator = " AND "; // change to OR when result set not satisfied
-            $addOperator = false;
 
-            $sql = "SELECT pictures.picture_id 
+            $sql = "SELECT DISTINCT pictures.picture_id 
                     FROM pictures 
                     LEFT JOIN artists on pictures.artist_fk = artists.artist_id
                     LEFT JOIN museums on pictures.museum_ownes_fk = museums.museum_id or pictures.museum_exhibits_fk = museums.museum_id
                     LEFT JOIN owners on pictures.owner_fk = owners.owner_id
+                    LEFT JOIN pictures_keywords on pictures.picture_id = pictures_keywords.picture_fk
+                    LEFT JOIN keywords on keywords.keyword_id = pictures_keywords.keyword_fk
                     WHERE ";
             $sql .= $this->getPictureNameSearchSql($search);
-            $sql .= $allOperator;
+            $sql .= " OR ";
             $sql .= $this->getPictureDescriptionSearchSql($search);
-            $sql .= $allOperator;
+            $sql .= " OR ";
             $sql .= $this->getArtistSearchSql($search);
-            $sql .= " UNION SELECT pictures.picture_id FROM pictures, museums "." WHERE ";
+            $sql .= " OR ";
             $sql .= $this->getMuseumOwnesSearchSql($search);
-            $sql .= $allOperator;
+            $sql .= " OR ";
             $sql .= $this->getMuseumExhibitsSearchSql($search);
-            $sql .= " UNION SELECT pictures.picture_id FROM pictures, owners "." WHERE ";
+            $sql .= " OR ";
             $sql .= $this->getOwnerSearchSql($search);
+            $sql .= " OR ";
+            $sql .= $this->getKeywordSearchSql(array($search));
 
             $result = $this->executeSql($db, $sql);
             $pictures = $this->getPicturesArrayFromResult($db, $result);
