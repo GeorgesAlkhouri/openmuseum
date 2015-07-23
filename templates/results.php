@@ -49,7 +49,7 @@
             if (empty($picture->museum_owns) && empty($picture->museum_exhibits)) {
 
                 $museum = "-";
-                $owner = $picture->owner->firstname . $picture->owner->lastname;
+                $owner = $picture->owner->firstname ." " . $picture->owner->lastname;
                 $museumExhibits = "-";
             } else if (!empty($picture->museum_owns) && !empty($picture->museum_exhibits)) {
 
@@ -59,7 +59,7 @@
             } else if (empty($picture->museum_owns)) {
 
                 $museum = $picture->museum_exhibits->name;
-                $owner = $picture->owner->firstname . $picture->owner->lastname;
+                $owner = $picture->owner->firstname . " " . $picture->owner->lastname;
                 $museumExhibits = "Yes";
             } else {
 
