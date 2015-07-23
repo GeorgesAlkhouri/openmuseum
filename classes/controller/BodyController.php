@@ -115,7 +115,7 @@ class BodyController implements IController {
         //Type: DisplayPicture
         $result;
 
-        if (strlen($this->prepareInput($request["search_all"])) > 0) {
+        if (isset($request["search_all"]) && strlen($this->prepareInput($request["search_all"])) > 0) {
 
             $searchAll = $this->prepareInput($request["search_all"]);
             $searchData->txtDefault = $searchAll;
@@ -197,6 +197,7 @@ class BodyController implements IController {
         $museumWebsite = NULL;
 
     	// Museum is optional
+      // Check is simplified
     	if (strlen($this->prepareInput($request["museum_name"])) > 0) {
     		$museumName = $this->prepareInput($request["museum_name"]);
     		$museumAdress = $this->prepareInput($request["museum_adress"]);
@@ -217,7 +218,14 @@ class BodyController implements IController {
 	    		!$this->validateText($museumWebsite)) {
 
 	    		echo "Wrong museum input";
+          return;
 	    	}
+
+        if (!$isMuseumOwner && !$isMuseumExhibitor) {
+
+          echo "Museum is neither Owner nor Exhibitor. Needs to be at least one of the two.";
+          return;
+        }
     	}
 
         $ownerFirstname = NULL;

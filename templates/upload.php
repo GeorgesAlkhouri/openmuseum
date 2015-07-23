@@ -1,16 +1,3 @@
-<script type="text/javascript">
-    $(document).ready(function(){
-        
-        $('#checkbox2').change(function() {
-            if($(this).is(":checked")) {
-                $("input.disableable").attr("disabled", true);
-                $("input.disableable").val("");
-            } else {
-                $("input.disableable").removeAttr("disabled");
-            }   
-        });
-    });
-</script>
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8">
@@ -78,23 +65,23 @@
                         <label>Museum (optional)</label>
                         <div class="row">
                             <div class="col-md-6">
-                                <input type="text" class="form-control" name="museum_name" placeholder="Name">
+                                <input type="text" class="form-control museum_input" name="museum_name" placeholder="Name">
                             </div>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" name="museum_adress" placeholder="Adress">
+                                <input type="text" class="form-control museum_input" name="museum_adress" placeholder="Adress">
                             </div>
                         </div>
                         <br />
                         <div class="row">
                             <div class="col-md-12">
-                                <input type="text" class="form-control" name="museum_website" placeholder="Website">
+                                <input type="text" class="form-control museum_input" name="museum_website" placeholder="Website">
                             </div>
                         </div>
                         <br />
                         <div class="row">
                             <div class="col-md-2"></div>
                             <div class="col-md-1">
-                                <input type="checkbox" name="museum_isExhibitor">
+                                <input id="museum_isExhibitor" type="checkbox" name="museum_isExhibitor">
                             </div>
                             <div class="col-md-2">
                                 <span>Does museum exhibit picture?</span>
@@ -140,5 +127,30 @@
     </div>
     <div class="col-md-2"></div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $("input.museum_input").keypress(function() {
+
+            $("#museum_isExhibitor").attr('checked', 'checked');
+        });
+
+        // $("#museum_isExhibitor").change(function(){
+        //
+        //     if ("input.museum_input").each(function(){
+        //
+        //     });
+        // });
+
+        $('#checkbox2').change(function() {
+            if($(this).is(":checked")) {
+                $("input.disableable").attr("disabled", true);
+                $("input.disableable").val("");
+            } else {
+                $("input.disableable").removeAttr("disabled");
+            }
+        });
+    });
+</script>
 </body>
 </html>
