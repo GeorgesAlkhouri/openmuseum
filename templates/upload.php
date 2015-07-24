@@ -33,10 +33,10 @@
                             <div class="col-md-12">
                                 <label>Choose Category (optional)</label>
                                 <select name="category[]" multiple class="form-control">
-                                    <option>Klassische Malerei</option>
-                                    <option>Moderne Kunst</option>
-                                    <option>Romantik</option>
-                                    <option>Expressionismus</option>
+                                    <option value="2">Klassische Malerei</option>
+                                    <option value="3">Moderne Kunst</option>
+                                    <option value="4">Romantik</option>
+                                    <option value="6">Expressionismus</option>
                                 </select>
                             </div>
                         </div>

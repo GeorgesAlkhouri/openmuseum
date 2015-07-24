@@ -65,10 +65,10 @@
                         <div class="row">
                             <label>Choose Category</label>
                             <select id="category_select" name="search_category[]" multiple class="form-control">
-                                <option>Klassische Malerei</option>
-                                <option>Moderne Kunst</option>
-                                <option>Romantik</option>
-                                <option>Expressionismus</option>
+                                <option value="2">Klassische Malerei</option>
+                                <option value="3">Moderne Kunst</option>
+                                <option value="4">Romantik</option>
+                                <option value="6">Expressionismus</option>
                             </select>
                             <br />
                         </div>

@@ -69,7 +69,7 @@ class BodyController implements IController {
             $comparisonPicture->weightTexture = $textureWeight;
             $comparisonPicture->weightShape = $shapeWeight;
             $comparisonPicture->weightLocation = 0.0;
-            $comparisonPicture->threshold = 30;
+            $comparisonPicture->threshold = 60;
             $comparisonPicture->image_path = $request["picture_comparing"]["tmp_name"];
             $comparisonPicture->image_name = $request["picture_comparing"]["name"];
 
@@ -83,7 +83,7 @@ class BodyController implements IController {
 
             //Color compare
             $comparisonPicture->setColorSearchValues();
-            $comparisonPicture->threshold = 30;
+            $comparisonPicture->threshold = 60;
 
             $image = imagecreatetruecolor(200, 200);
             // sets background to color
@@ -323,8 +323,8 @@ class BodyController implements IController {
         array_walk($categories, function(&$key, $value) {
 
             $category = new Category();
-            $category->id = $value + 1;
-            $category->title = $key;
+            $category->id = $key;
+            $category->title = "TODO: Mapping";
 
             $key = $category;
         });
