@@ -71,7 +71,7 @@ class DbSearcher
         /* Search for Categories Information */
         if(!empty($searchData->categories)){
             $sqlFrom .= " LEFT JOIN pictures_categories on pictures.picture_id = pictures_categories.picture_fk  LEFT JOIN categories
-            on categories.category_id = pictures_categories.picture_fk ";
+            on categories.category_id = pictures_categories.category_fk ";
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
             $sqlWhere .= $this->getCategoriesSearchSql($searchData->categories);
             $addOperator = true;
@@ -298,9 +298,9 @@ class DbSearcher
     function getCategoriesSearchSql($categories) {
         $sql = "";
         foreach ($categories as $category_id => $value) {
-           $sql .= "UPPER(categories.category_id) LIKE UPPER('%$value->id%') OR ";
+           $sql .= "categories.category_id = $value->id OR ";
         }
-        $sql = substr($sql, 0, strlen($sql)-4);
+        $sql = substr($sql, 0, strlen($sql)-3);
         return $sql;
     }
 
