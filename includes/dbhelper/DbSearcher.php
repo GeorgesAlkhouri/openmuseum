@@ -8,7 +8,7 @@ class DbSearcher
         $this->log = 'DbSearcher';
     }
 
-    function searchDetails($db, $searchData) {
+    function searchDetails($db, $searchData, $fuzzy, $stem) {
 
         $txtFieldOperator = " AND "; // change to OR when result set not satisfied
         $keywordOperator = " AND "; // change to OR when result set not satisfied
@@ -25,7 +25,7 @@ class DbSearcher
         }
         if (!empty($searchData->txtDescription)) {
             if ($addOperator) { $sqlWhere .= $txtFieldOperator;}
-            $sqlWhere .= $this->getPictureDescriptionSearchSql($searchData->txtDescription);
+            $sqlWhere .= $this->getPictureDescriptionSearchSql($searchData->txtDescription, $fuzzy, $stem);
             $addOperator = true;
         }
 
@@ -84,7 +84,7 @@ class DbSearcher
         return $pictures;
     }
 
-    function searchAll($db, $searchData){
+    function searchAll($db, $searchData, $fuzzy, $stem){
 
         if (!empty($searchData->txtDefault)) {
 
@@ -100,7 +100,7 @@ class DbSearcher
                     WHERE ";
             $sql .= $this->getPictureNameSearchSql($search);
             $sql .= " OR ";
-            $sql .= $this->getPictureDescriptionSearchSql($search);
+            $sql .= $this->getPictureDescriptionSearchSql($search, $fuzzy, $stem);
             $sql .= " OR ";
             $sql .= $this->getArtistSearchSql($search);
             $sql .= " OR ";
@@ -256,8 +256,13 @@ class DbSearcher
         return "UPPER(pictures.name) LIKE UPPER('%$search%') ";
     }
 
-    function getPictureDescriptionSearchSql($search) {
-
+    function getPictureDescriptionSearchSql($search, $fuzzy, $stem) {
+        if ($fuzzy) {
+            return "CONTAINS(pictures.description, 'fuzzy($search)') > 0 ";
+        }
+        if ($stem) {
+            return "CONTAINS(pictures.description, '\$$search') > 0 ";
+        }
         return "CONTAINS(pictures.description, '$search') > 0 ";
     }
 

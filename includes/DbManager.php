@@ -88,13 +88,27 @@ final class DbManager
     function searchDetails($searchData){
 
         $dbSearcher = new DbSearcher();
-        return $dbSearcher->searchDetails($this->db, $searchData);
+        $pictures = $dbSearcher->searchDetails($this->db, $searchData, false, false);
+        if (count($pictures) < 1) {
+            $pictures = $dbSearcher->searchDetails($this->db, $searchData, true, false); // search with fuzzy
+        }
+        if (count($pictures) < 1) {
+            $pictures = $dbSearcher->searchDetails($this->db, $searchData, false, true); // search with stem
+        }
+        return $pictures;
     }
 
     function searchAll($searchData){
 
         $dbSearcher = new DbSearcher();
-        return $dbSearcher->searchAll($this->db, $searchData);
+        $pictures = $dbSearcher->searchAll($this->db, $searchData, false, false);
+        if (count($pictures) < 1) {
+            $pictures = $dbSearcher->searchAll($this->db, $searchData, true, false); // search with fuzzy
+        }
+        if (count($pictures) < 1) {
+            $pictures = $dbSearcher->searchAll($this->db, $searchData, false, true); // search with stem
+        }
+        return $pictures;
     }
 
     /*
