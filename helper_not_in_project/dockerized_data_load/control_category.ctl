@@ -1,0 +1,17 @@
+LOAD DATA
+CHARACTERSET UTF8
+  INFILE *
+  APPEND
+  INTO TABLE CATEGORIES
+    TRAILING NULLCOLS
+  (CATEGORY_ID TERMINATED BY ",",
+   TITLE TERMINATED BY ",",
+   CATEGORY_FK TERMINATED BY WHITESPACE)
+BEGINDATA
+  1,Bildepoche
+  2,Klassische Malerei,1
+  3,Moderne Kunst,1
+  4,Romanik,2
+  5,Renaissance,2
+  6,Expressionismus,3
+  7,Surrealismus,3
