@@ -140,7 +140,14 @@ class DbSearcher
 
         $result = $this->executeSql($db, $sql);
         $pictures = $this->getPicturesArrayFromResult($db, $result);
+        $this->deleteComparisonPictures($db);
         return $pictures;
+    }
+
+    function deleteComparisonPictures($db){
+
+        $sql = "DELETE FROM comparison_pictures";
+        $this->executeSql($db, $sql);
     }
 
     /*
