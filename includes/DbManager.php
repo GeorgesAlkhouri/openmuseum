@@ -10,7 +10,7 @@ include_once 'Auth.php';
 
 final class DbManager
 {
-    
+
     private $db;
 
     public static function Instance()
@@ -24,31 +24,31 @@ final class DbManager
 
     private function __construct()
     {
-        if ($this->db = oci_connect(Auth::$stUser, Auth::$stPW, '//ora10glv.imn.htwk-leipzig.de:1521/ora10glv')) {
+        if ($this->db = oci_connect(Auth::$stUser, Auth::$stPW, '//ora10glv.imn.htwk-leipzig.de:1521/ora10glv', 'AL32UTF8')) {
             echo "dbconnection.php - connection to database succeded <br />";
-        } 
+        }
         else {
             die("connection failed");
         }
-        
+
         $tableCreator = new DbTableCreator();
         $tableCreator->createTablesIfNeeded($this->db);
     }
 
-    
+
     function insertUserDataInDb($picture, $artist, $museum, $owner, $keywords, $category_ids) {
-        
+
         $dbInserter = new DbInserter();
         $idFetcher = new DbIdFetcher();
 
         /********** ARTIST ****************/
         $dbInserter->insertArtistIfDoesNotExists($this->db, $artist);
         $picture->artist_fk = $idFetcher->fetchArtistId($this->db, $artist);
-        
+
         /********** OWNER ****************/
         $dbInserter->insertOwnerIfDoesNotExists($this->db, $owner);
         $picture->owner_fk = $idFetcher->fetchOwnerId($this->db, $owner);
-        
+
         /********** MUSEUM ****************/
         if ($museum->isExhibitor) {
             $dbInserter->insertMuseumExhibitsIfNotExists($this->db, $museum);
