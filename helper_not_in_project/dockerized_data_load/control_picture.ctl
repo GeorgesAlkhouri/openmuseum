@@ -5,7 +5,7 @@ CHARACTERSET UTF8
   INTO TABLE PICTURES
   FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY '"'
   (
-    PICTURE_ID,
+    PICTURE_ID "PICTURES_SEQ.NEXTVAL",
     NAME,
     CREATION_DATE DATE 'dd.mm.yyyy',
     UPLOAD_DATE DATE 'dd.mm.yyyy',
@@ -28,7 +28,7 @@ CHARACTERSET UTF8
     OWNER_FK
   )
 BEGINDATA
-1,Mona Lisa,01.01.1503,22.01.1990,"Mona Lisa ist ein weltberühmtes Ölgemälde von Leonardo da Vinci. Das auf Italienisch als La Gioconda (dt. die Heitere) bekannte Bild wurde vermutlich nach der Florentinerin Lisa del Giocondo benannt.",Mona-Lisa.jpg,,1,100,,1,22.01.1990,22.01.1990,1
-2,Das weiße Haus bei Nacht,01.01.1823,22.01.1990,"Das weiße Haus bei Nacht (französisch: La maison blanche)[1] ist der Titel eines Gemäldes von Vincent van Gogh.",White-House.jpg,,2,100,,2,22.01.1990,22.01.1990,2
-3,Vitruvianischer Mensch,01.01.1202,22.01.1990,"Als vitruvianischer Mensch (lat. homo vitruvianus, auch: Vitruvianische Figur) wird eine Darstellung des Menschen nach den vom antiken Architekten und Ingenieur Vitruv(ius) formulierten und idealisierten Proportionen bezeichnet.",Vitruve-Man.jpg,,1,100,,3,22.01.1990,22.01.1990,3
-4,The Last Judgment,01.01.1541,22.01.1990,"The Last Judgment, or The Last Judgement (Italian: Il Giudizio Universale),[1] is a fresco by the Italian Renaissance master Michelangelo executed on the altar wall of the Sistine Chapel in Vatican City.",The-Last-Judgment.jpg,,3,100,,1,22.01.1990,22.01.1990,4
+,Mona Lisa,01.01.1503,22.01.1990,"Mona Lisa ist ein weltberühmtes Ölgemälde von Leonardo da Vinci. Das auf Italienisch als La Gioconda (dt. die Heitere) bekannte Bild wurde vermutlich nach der Florentinerin Lisa del Giocondo benannt.",Mona-Lisa.jpg,,1,100,,1,22.01.1990,22.01.1990,1
+,Das weiße Haus bei Nacht,01.01.1823,22.01.1990,"Das weiße Haus bei Nacht (französisch: La maison blanche)[1] ist der Titel eines Gemäldes von Vincent van Gogh.",White-House.jpg,,2,100,,2,22.01.1990,22.01.1990,2
+,Vitruvianischer Mensch,01.01.1202,22.01.1990,"Als vitruvianischer Mensch (lat. homo vitruvianus, auch: Vitruvianische Figur) wird eine Darstellung des Menschen nach den vom antiken Architekten und Ingenieur Vitruv(ius) formulierten und idealisierten Proportionen bezeichnet.",Vitruve-Man.jpg,,1,100,,3,22.01.1990,22.01.1990,3
+,The Last Judgment,01.01.1541,22.01.1990,"The Last Judgment, or The Last Judgement (Italian: Il Giudizio Universale),[1] is a fresco by the Italian Renaissance master Michelangelo executed on the altar wall of the Sistine Chapel in Vatican City.",The-Last-Judgment.jpg,,3,100,,1,22.01.1990,22.01.1990,4

@@ -5,9 +5,10 @@ CHARACTERSET UTF8
   INTO TABLE OWNERS
   REENABLE
   FIELDS TERMINATED BY ","
-  (OWNER_ID, FIRSTNAME, LASTNAME)
+  (OWNER_ID "OWNERS_SEQ.NEXTVAL" ,
+   FIRSTNAME, LASTNAME)
 BEGINDATA
-1,John,Mccarthy
-2,Rich,Hickey
-3,Edsger W.,Dijkstra
-4,Alan,Turing
+,John,Mccarthy
+,Rich,Hickey
+,Edsger W.,Dijkstra
+,Alan,Turing

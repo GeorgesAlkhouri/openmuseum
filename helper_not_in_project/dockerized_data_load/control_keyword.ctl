@@ -5,14 +5,15 @@ CHARACTERSET UTF8
   INTO TABLE KEYWORDS
   REENABLE
   FIELDS TERMINATED BY ","
-  (KEYWORD_ID, TITLE)
+  (KEYWORD_ID "KEYWORDS_SEQ.NEXTVAL",
+   TITLE)
 BEGINDATA
-1,Frau
-2,Gesicht
-3,Lachen
-4,Weiß
-5,Nacht
-6,Haus
-7,Mann
-8,Mensch
-9,Gericht
+,Frau
+,Gesicht
+,Lachen
+,Weiß
+,Nacht
+,Haus
+,Mann
+,Mensch
+,Gericht
