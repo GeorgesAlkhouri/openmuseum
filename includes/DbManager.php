@@ -31,8 +31,8 @@ final class DbManager
             die("connection failed");
         }
         
-        $tableCreator = new DbTableCreator();
-        $tableCreator->createTablesIfNeeded($this->db);
+        /*$tableCreator = new DbTableCreator();
+        $tableCreator->createTablesIfNeeded($this->db);*/
     }
 
     
