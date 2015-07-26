@@ -127,7 +127,21 @@ class DbSearcher
 
         $inserter = new DbInserter();
         $id = $inserter->insertComparisonPicture($db, $picture);
+        $pictures;
 
+        for ($threshold = 10; $threshold < 101; $threshold = $threshold + 10) { 
+            $pictures = $this->comparePicture($db, $picture, $id, $threshold);
+            if (count($pictures)>0) {
+                break;
+            }
+        }
+        
+        $this->deleteComparisonPictures($db);
+        return $pictures;
+    }
+
+    function comparePicture($db, $picture, $id, $threshold){
+        
         $sql = "SELECT P.picture_id, ORDSYS.IMGScore(123) SCORE
                 FROM pictures P, comparison_pictures C
                 WHERE C.comparison_picture_id=$id
@@ -136,11 +150,10 @@ class DbSearcher
                     location=\"$picture->weightLocation\"
                     shape=\"$picture->weightShape\"
                     texture=\"$picture->weightTexture\"',
-                    $picture->threshold, 123) = 1 ORDER BY SCORE ASC";
+                    $threshold, 123) = 1 ORDER BY SCORE ASC";
 
         $result = $this->executeSql($db, $sql);
         $pictures = $this->getPicturesArrayFromResult($db, $result);
-        $this->deleteComparisonPictures($db);
         return $pictures;
     }
 
