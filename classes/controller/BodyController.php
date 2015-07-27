@@ -69,7 +69,7 @@ class BodyController implements IController {
             $comparisonPicture->weightTexture = $textureWeight;
             $comparisonPicture->weightShape = $shapeWeight;
             $comparisonPicture->weightLocation = 0.0;
-            $comparisonPicture->threshold = 60;
+            $comparisonPicture->threshold = 10;
             $comparisonPicture->image_path = $request["picture_comparing"]["tmp_name"];
             $comparisonPicture->image_name = $request["picture_comparing"]["name"];
 
@@ -83,7 +83,7 @@ class BodyController implements IController {
 
             //Color compare
             $comparisonPicture->setColorSearchValues();
-            $comparisonPicture->threshold = 60;
+            $comparisonPicture->threshold = 10;
 
             $image = imagecreatetruecolor(200, 200);
             // sets background to color

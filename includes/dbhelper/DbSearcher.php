@@ -129,19 +129,19 @@ class DbSearcher
         $id = $inserter->insertComparisonPicture($db, $picture);
         $pictures;
 
-        for ($threshold = 10; $threshold < 101; $threshold = $threshold + 10) { 
+        for ($threshold = 10; $threshold <= 90; $threshold = $threshold + 10) {
             $pictures = $this->comparePicture($db, $picture, $id, $threshold);
             if (count($pictures)>0) {
                 break;
             }
         }
-        
+
         $this->deleteComparisonPictures($db);
         return $pictures;
     }
 
     function comparePicture($db, $picture, $id, $threshold){
-        
+
         $sql = "SELECT P.picture_id, ORDSYS.IMGScore(123) SCORE
                 FROM pictures P, comparison_pictures C
                 WHERE C.comparison_picture_id=$id
