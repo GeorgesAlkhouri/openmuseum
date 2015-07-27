@@ -44,4 +44,4 @@ BEGINDATA
 ,Ziegelhaus,01.01.1900,22.01.1990,"Dieses Bild zeigt ein Haus aus Ziegeln.",BrickHouse1.jpg,,6,100,,3,22.01.1990,22.01.1990,3
 ,Stillleben mit Kommode,01.01.1900,22.01.1990,"Vom breiteren Publikum unverstanden, schätzten besonders die fortschrittlich gesinnten Impressionisten die reine Farbmalerei Cézannes, der zum Wegbereiter des französischen Kubismus wurde.",Cezanne_Still-Life-With-Commode.jpg,,7,100,,3,22.01.1990,22.01.1990,1
 ,Château Noir,01.01.1900,22.01.1990,"Mit seinem Studienkameraden aus der Académie Suisse, Achille Emperaire, begab sich Cézanne in das Gebiet um den Ort Le Tholonet, wo er im Château Noir wohnte, das am Sainte-Victoire-Gebirge liegt.",Schloss1.jpg,,7,100,,1,22.01.1990,22.01.1990,1
-,Stilleben mit roten Zwiebeln,01.01.1900,22.01.1990,"Bild (ein Stillleben) mit roten Zwieblen auf einem Tisch.",still-life-with-red-onions-1898.jpg,,7,100,,1,22.01.1990,22.01.1990,2
+,Stillleben mit roten Zwiebeln,01.01.1900,22.01.1990,"Bild (ein Stillleben) mit roten Zwieblen auf einem Tisch.",still-life-with-red-onions-1898.jpg,,7,100,,1,22.01.1990,22.01.1990,2

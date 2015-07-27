@@ -36,7 +36,7 @@
                             <div class="row">
                                 <div class="input-group">
                                     <span class="input-group-addon">Museum</span>
-                                    <input name="search_picture_museum" type="text" class="form-control" placeholder="Search for a museum...">
+                                    <input name="search_picture_museum" type="text" class="form-control" placeholder="Search for a museum which exhibits...">
                                 </div>
                                 <br />
                             </div>

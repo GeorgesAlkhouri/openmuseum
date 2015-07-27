@@ -18,7 +18,7 @@ class BodyController implements IController {
             unset($_SESSION['RESULTS']);
         } elseif ($this->body === "picture") {
 
-          $this->view->assign("picture_data", $_SESSION["PICTURE_DATA"]);
+          $this->view->assign("picture_data", $_SESSION[$request["name"]]);
           $this->view->assign("name", $request["name"]);
           $this->view->assign("mime_type", $request["mime_type"]);
 
@@ -142,6 +142,8 @@ class BodyController implements IController {
             $searchData->txtDescription = $description;
             $searchData->keywords = $keywords;
             $searchData->categories = $categories;
+            // $searchData->txtMuseumOwnes = $museum;
+            $searchData->txtMuseumExhibits = $museum;
 
             $result = DbManager::Instance()->searchDetails($searchData);
             $_SESSION['RESULTS'] = $result;
@@ -373,7 +375,7 @@ class BodyController implements IController {
 
     private function validateFile($data) {
 
-    	if ($data["size"] > 625000)
+    	if ($data["size"] > 5000000)
     		return false;
 
     	$allowedFileTypes = array("image/jpeg", "image/tiff", "image/png");

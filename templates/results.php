@@ -40,7 +40,7 @@
             $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
             $extra = "index.php?view=picture"."&name=$picture->name"."&mime_type=".$mime_type;
 
-            $_SESSION["PICTURE_DATA"] = $picture->image_data;
+            $_SESSION[$picture->name] = $picture->image_data;
 
             $museum;
             $museumExhibits;
