@@ -17,3 +17,6 @@ BEGINDATA
 ,Mann
 ,Mensch
 ,Gericht
+,Landschaft
+,Ziegel
+,Stillleben

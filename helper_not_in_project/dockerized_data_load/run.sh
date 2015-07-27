@@ -16,8 +16,19 @@ $SQLLDR -userid=$dbuser/$dbpwd@HTWK -control=control_picture.ctl
 $SQLLDR -userid=$dbuser/$dbpwd@HTWK -control=control_pictures_categories.ctl
 $SQLLDR -userid=$dbuser/$dbpwd@HTWK -control=control_pictures_keywords.ctl
 
-for i in `seq 1 4`;
+touch create_signatures.sql
+
+for i in `seq 1 17`;
   do
-    echo "UPDATE PICTURES SET image_sig=ORDSYS.ORDImageSignature.init() WHERE picture_id=$i;" | $SQLPLUS $dbuser/$dbpwd@HTWK
-    echo "DECLARE imageobj ordsys.ordimage; image_sigobj ordsys.ordimagesignature; BEGIN SELECT image, image_sig INTO imageobj, image_sigobj FROM pictures WHERE picture_id = $i FOR UPDATE; image_sigobj.Generatesignature(imageobj); UPDATE pictures SET image_sig = image_sigobj WHERE picture_id = $i; COMMIT; END;" | $SQLPLUS $dbuser/$dbpwd@HTWK
+    echo "UPDATE PICTURES SET image_sig=ORDSYS.ORDImageSignature.init() WHERE picture_id=$i;" >> create_signatures.sql
+    echo "DECLARE imageobj ordsys.ordimage;" >> create_signatures.sql
+    echo "image_sigobj ordsys.ordimagesignature;" >> create_signatures.sql
+    echo "BEGIN SELECT image, image_sig INTO imageobj, image_sigobj FROM pictures WHERE picture_id = $i FOR UPDATE;" >> create_signatures.sql
+    echo "image_sigobj.Generatesignature(imageobj);" >> create_signatures.sql
+    echo "UPDATE pictures SET image_sig = image_sigobj WHERE picture_id = $i;" >> create_signatures.sql
+    echo "COMMIT;" >> create_signatures.sql
+    echo "END;" >> create_signatures.sql
+    echo "/" >> create_signatures.sql
 done
+
+echo "@create_signatures.sql" | $SQLPLUS $dbuser/$dbpwd@HTWK
