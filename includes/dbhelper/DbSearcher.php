@@ -327,7 +327,7 @@ class DbSearcher
 
     function executeSql($db, $sql) {
 
-        echo "<br \> $this->log - $sql <br />";
+        // echo "<br \> $this->log - $sql <br />";
         $stmt = oci_parse($db, $sql);
         oci_execute($stmt);
         return $stmt;
