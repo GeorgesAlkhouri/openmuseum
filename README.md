@@ -19,6 +19,6 @@ The UI is created with [Bootstrap](http://getbootstrap.com) and external librari
 
 ###Side Note
 
-All example pictures were labeled for noncommercial reuse.
+All example pictures are labeled for noncommercial reuse.
 
 Please keep in mind that this is a study project. So don't expect to much compfort.
